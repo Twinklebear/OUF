@@ -89,7 +89,10 @@ class Command(object):
             # write stderr/stdout to temp file in case students print tons of stuff out.
                 stdoutFile = tempfile.mkstemp("ag-stdout-")
                 stderrFile = tempfile.mkstemp("ag-stderr-")
-                self.process = subprocess.Popen(self.cmd, stdin=subprocess.PIPE, stdout=stdoutFile[0], stderr=stderrFile[0], preexec_fn=self.setProcessLimits)
+                self.process = subprocess.Popen(self.cmd,
+						stdin=subprocess.PIPE, stdout=stdoutFile[0],
+						stderr=stderrFile[0])
+					
                 if stdindata:
                     autogradeobj.log_addEntry("Process manager: Data sent to stdin: "+str(stdindata))
                     self.process.stdin.write(str(stdindata))
