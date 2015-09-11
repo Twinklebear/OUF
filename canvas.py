@@ -129,16 +129,15 @@ class canvas():
         if courseId == None:
             print("Can't getStudents without a courseId.")
             exit()
-        students =  self.makeRequest("courses/"+str(courseId)+"/students?"+
+        students = self.makeRequest("courses/"+str(courseId)+"/students?"+
                                      urllib.parse.urlencode({"per_page":"100",
                                                              "page": "1"}))
-	# Filter out students who are still "pending".
-	# These "pending" students do not have a login_id, which some of this code relies on
+	    # Filter out students who are still "pending".
+	    # These "pending" students do not have a id, which some of this code relies on
         nonPendingStudents = []
         for s in students:
-            if 'login_id' in s:
+            if 'id' in s:
                 nonPendingStudents.append(s)
-
         return nonPendingStudents
 
     def getAssignments(self, courseId=None):
@@ -197,8 +196,7 @@ class canvas():
             if s['name'].lower()          == searchString or \
                s['short_name'].lower()    == searchString or \
                s['sortable_name'].lower() == searchString or \
-               s['login_id'].lower()      == searchString or \
-               str(s['id']) == searchString:
+               s['id']                    == int(searchString):
                 return s
 
         # print("Failed to find student: " + searchString)
@@ -325,13 +323,13 @@ class canvas():
                     else: # Assuming submissions is what canvas.findSubmissionsToGrade() returns
                         studentSubmissionHist = [ submission ]
 
-#            if 'login_id' not in student or 'name' not in student:
+#            if 'id' not in student or 'name' not in student:
 #                print("ERROR processing student: ")
 #                self.prettyPrint(student)
 #                return
                         
             if len(studentSubmissionHist) == 0:
-                print(fmtStr%("", " none", 0, str(student['login_id']), student['name']))
+                print(fmtStr%("", " none", 0, str(student['id']), student['name']))
             for hist in studentSubmissionHist:
                 late = ""
                 graded = ""
@@ -339,7 +337,7 @@ class canvas():
                     late = " late"
                 if hist['grade']:
                     graded = str(hist['grade'])
-                print(fmtStr%(graded, late, str(hist['attempt']), str(student['login_id']), student['name']))
+                print(fmtStr%(graded, late, str(hist['attempt']), str(student['id']), student['name']))
 
 
     @classmethod
@@ -385,17 +383,17 @@ class canvas():
         # Figure out if the name of the downloaded file/subdirectory
         # should be based on their username or group name (if there is
         # a set of groups associated with this assignment.)
-        login = student['login_id']
-        if student['login_id'] in group_memberships:
-            (group, usersInGroup) = group_memberships[student['login_id']]
+        login = student['id']
+        if student['id'] in group_memberships:
+            (group, usersInGroup) = group_memberships[student['id']]
             metadataNew['canvasGroup'] = group
             metadataNew['canvasStudentsInGroup'] = usersInGroup
             login = group['name']
 
         # Look for an existing metadata file
         metadataFile = None;
-        metadataFiles = [ os.path.join(directory,login+".AUTOGRADE.json"),
-                          os.path.join(directory,login,"AUTOGRADE.json") ]
+        metadataFiles = [ os.path.join(directory, str(login) + ".AUTOGRADE.json"),
+                          os.path.join(directory, str(login),"AUTOGRADE.json") ]
         for mdf in metadataFiles:
             if os.path.exists(mdf):
                 metadataFile = mdf
@@ -427,7 +425,7 @@ class canvas():
             print("%-12s is up to date" % login)
             return
 
-        archiveFile  = os.path.join(directory,login+exten)
+        archiveFile  = os.path.join(directory,str(login) + exten)
 
         # Delete existing archive if it exists.
         toDelete = metadataFiles
@@ -439,7 +437,7 @@ class canvas():
         print("%-12s downloading attempt %d submitted %s" % (login, newAttempt, 
               self.prettyDate(utc_dt, datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc))))
         try:
-            urllib.request.urlretrieve(attachment['url'], directory+"/"+login+exten)
+            urllib.request.urlretrieve(attachment['url'], directory+"/" + str(login) + exten)
         except:
             print("ERROR: Failed to download "+attachment['url'])
             import traceback
@@ -461,9 +459,7 @@ class canvas():
             os.makedirs(dir)
         # require one attachment
         for i in submissions:
-            if i != None and \
-               'attachments' in i and \
-               len(i['attachments']) == 1 and \
+            if i != None and 'attachments' in i and len(i['attachments']) == 1 and \
                i['attachments'][0]['url'] and \
                i['attachments'][0]['filename']:
                 student = self.findStudent(students, i['user_id'])
@@ -590,7 +586,7 @@ class canvas():
   
     def printStudentIds(self, students):
         for i in students:
-            print("%10s %10s %s"%(str(i['id']), i['login_id'], i['name']))
+            print("%10s %10s %s"%(str(i['id']), i['id'], i['name']))
 
     def setDefaultCourseId(self, courseId):
         if courseId == None:
@@ -609,10 +605,10 @@ class canvas():
         assignments = self.getAssignments(courseId=courseId)
         
         # Get a list of the students in the course
-        students    = self.getStudents(courseId=courseId)
+        students = self.getStudents(courseId=courseId)
         # Filter that list down to the requested student
         if userid:
-            students = [ student for student in students if userid==student['login_id']]
+            students = [ student for student in students if userid==student['id']]
             if len(students) == 0:
                 print("No matching student for userid %s" % userid)
                 exit(1)
@@ -637,8 +633,8 @@ class canvas():
             for g in assignmentGroups:
                 usersInGroup = self.makeRequest("groups/"+str(g['id'])+"/users")
                 for u in usersInGroup:
-                    if 'login_id' in u: # Filter out pending students in a group
-                        group_memberships[u['login_id']] = (g, usersInGroup);
+                    if 'id' in u: # Filter out pending students in a group
+                        group_memberships[u['id']] = (g, usersInGroup);
 
         # Get the submissions for the assignment
         if userid:
