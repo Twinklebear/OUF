@@ -19,8 +19,20 @@ def compare(reference_output, student_output, result_file):
 
 # count the number of compiler warnings and errors in the input file, and write the results to the
 # output file
-def count_warning_error(input_file, output_file):
-    pass # TODO
+def count_warnings_errors(input_file, output_file):
+    warning_count = 0
+    error_count = 0
+    with open(input_file, 'r') as f:
+        content = f.readlines()
+        for line in content:
+            if line.find('warning C') != -1:
+                ++warning_count
+            elif line.find('error C') != -1:
+                ++error_count
+    with open(output_file, 'a') as f:
+        f.write('\n')
+        f.write('Warnings: ' + warning_count + '\n')
+        f.write('Errors: ' + error_count + '\n')
 
 print 'Grading', sys.argv[1]
 main_dir = os.path.abspath('.')
@@ -33,11 +45,12 @@ for student_dir in os.walk(homework_dir).next()[1]:
         base, ext = os.path.splitext(file)
         if ext == '.cpp' or ext == '.cc':
             cl_stdout_file = base + '_cl.txt'
-            stdin_file = main_dir + '/' + base + '_stdin.txt'
+            stdin_file = homework_dir + '/' + base + '_stdin.txt'
             stdout_file = base + '_stdout.txt'
-            ref_stdout_file = main_dir + '/' + base + '_stdout.txt'
+            ref_stdout_file = homework_dir + '/' + base + '_stdout.txt'
             result_file = base + '_results.txt'
             grade_file = base + '_grade.txt'
+            check_prog = homework_dir + '/' + base + '_check.exe'
             if (sys.argv[2] == 'compile'): # compile
                 print 'Compiling ' + file
                 with open(cl_stdout_file, 'w') as cl_stdout:
@@ -53,14 +66,13 @@ for student_dir in os.walk(homework_dir).next()[1]:
                             subprocess.Popen([base + '.exe'], stdout=stdout_, universal_newlines=True)
             elif (sys.argv[2] == 'check'): # check outputs
                 print 'Checking ' + base
-                check_prog = main_dir + '/' + base + '_check.exe'
                 if (os.path.isfile(check_prog)): # use the check program
                     with open(stdout_file, 'r') as stdout_, open(result_file, 'w') as result_:
                         subprocess.Popen([check_prog], stdin=stdout_, stdout=result_, universal_newlines=True)
                 else: # simply compare output files
                     compare(ref_stdout_file, stdout_file, result_file)
                 # count the number of warnings and errors
-                count_warning_error(cl_stdout_file, result_file)
+                count_warnings_errors(cl_stdout_file, result_file)
             elif (sys.argv[2] == 'grade'): # open the relevant text files to grade
                 open(grade_file, 'a').close()
                 if os.path.isfile(ref_stdout_file):
