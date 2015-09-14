@@ -56,7 +56,7 @@ for thisDir in dirs:
     if os.path.exists(os.path.join(thisDir, "AUTOGRADE.txt")):
         print("SKIPPING %s because it has already been autograded." % thisDir);
         continue
-    
+
     # Set up the autograder
     ag = autograder.autograder("AUTOGRADE.txt", thisDir)
 

@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # Author: Scott Kuhl
-import json, urllib.request, urllib.parse
+import json
+import urllib.request
+import urllib.parse
 import textwrap
 import sys,shutil,os,time,hashlib,re
 from pprint import pprint
