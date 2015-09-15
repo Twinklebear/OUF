@@ -31,23 +31,30 @@ def compare(reference_output, student_output, result_file):
     case_number = 0
     case_failed = False
     match_case_number = re.compile(" Case (\d+):")
-    with open(reference_output, 'r') as ref_out:
-        with open(student_output, 'r') as student_out:
-            reference = ref_out.readlines()
-            student = student_out.readlines()
-            # TODO: Strip leading/trailing whitespace and newlines from student solution
-            # but don't strip the last newline character? Or strip all trailing and stick
-            # the last newline character back on
-            for line in difflib.unified_diff(reference, student, fromfile='reference', tofile='student'):
-                print(line)
-                case_match = match_case_number.match(line)
-                if case_match:
-                    case_number = int(case_match.group(1))
-                    case_failed = False
-                if not case_failed and line.startswith('-') and not line.startswith('---'):
-                    case_failed_count += 1
-                    case_failed = True
-                diff += line
+
+    if os.path.isfile(reference_output) and os.path.isfile(student_output):
+        with open(reference_output, 'r') as ref_out:
+            with open(student_output, 'r') as student_out:
+                reference = ref_out.readlines()
+                student = student_out.readlines()
+                # TODO: Strip leading/trailing whitespace and newlines from student solution
+                # but don't strip the last newline character? Or strip all trailing and stick
+                # the last newline character back on
+                for line in difflib.unified_diff(reference, student, fromfile='reference', tofile='student'):
+                    print(line)
+                    case_match = match_case_number.match(line)
+                    if case_match:
+                        case_number = int(case_match.group(1))
+                        case_failed = False
+                    if not case_failed and line.startswith('-') and not line.startswith('---'):
+                        case_failed_count += 1
+                        case_failed = True
+                    diff += line
+    elif not os.path.isfile(student_output): # student program produces no outputs
+        case_failed_count = 1
+    elif not os.path.isfile(reference_output): # this problem has no reference outputs
+        case_failed_count = 0
+
     with open(result_file, 'w') as result_out:
         result_out.write(diff)
         result_out.write('\nCases Failed: ' + str(case_failed_count) + '\n')
