@@ -139,6 +139,7 @@ homework_dir = os.path.abspath('./submissions/' + sys.argv[1])
 # Collect the list of all student directories
 for dir in next(os.walk(homework_dir))[1]:
     student_dir = os.path.abspath(homework_dir + '/' + dir)
+    print('Processing student ' + student_dir)
     os.chdir(student_dir)
     # Collect the list of all of the student's files if we're uploading their
     # total score
@@ -169,26 +170,29 @@ for dir in next(os.walk(homework_dir))[1]:
                         universal_newlines=True)
             # Run all student programs and save output results
             elif sys.argv[2] == 'run':
-                print('Running ' + base + '.exe')
+                exe = base + '.exe'
+                print('Running ' + exe)
                 prog = None
                 if os.path.isfile(stdin_file): # run with input
                     with open(stdin_file, 'r') as stdin_, open(stdout_file, 'w') as stdout_:
                         try:
-                            prog = subprocess.Popen([base + '.exe'], stdin=stdin_, stdout=stdout_, universal_newlines=True)
-                            prog.wait(5000)
-                        except TimeoutExpired:
+                            prog = subprocess.Popen([exe], stdin=stdin_, stdout=stdout_, universal_newlines=True)
+                            prog.wait(5)
+                        except subprocess.TimeoutExpired:
+                            print('Time out')
                             prog.kill()
                         except:
-                            pass
+                            print('Exception!')
                 else: # run without input
                     with open(stdout_file, 'w') as stdout_:
                         try:
-                            prog = subprocess.Popen([base + '.exe'], stdout=stdout_, universal_newlines=True)
-                            prog.wait(5000)
-                        except TimeoutExpired:
+                            prog = subprocess.Popen([exe], stdout=stdout_, universal_newlines=True)
+                            prog.wait(5)
+                        except subprocess.TimeoutExpired:
+                            print('Time out')
                             prog.kill()
                         except:
-                            pass
+                            print('Exception!')
             # Diff student outputs with the expected solution
             elif sys.argv[2] == 'check':
                 print('Checking ' + base)
