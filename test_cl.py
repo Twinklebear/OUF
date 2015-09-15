@@ -41,7 +41,6 @@ def compare(reference_output, student_output, result_file):
                 # but don't strip the last newline character? Or strip all trailing and stick
                 # the last newline character back on
                 for line in difflib.unified_diff(reference, student, fromfile='reference', tofile='student'):
-                    print(line)
                     case_match = match_case_number.match(line)
                     if case_match:
                         case_number = int(case_match.group(1))
