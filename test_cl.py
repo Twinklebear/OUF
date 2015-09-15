@@ -15,11 +15,12 @@ notepad_file = 'C:/Program Files (x86)/Notepad++/notepad++.exe'
 vim_file = 'C:/Program Files (x86)/Vim/vim74/gvim.exe'
 editor = vim_file
 if sys.argv[2] == 'grade':
-    if not os.path.isfile(editor):
-        if editor == notepad_file:
-            print('Please install Notepad++')
-        else:
-            print('Please install gvim')
+    if os.path.isfile(vim_file):
+        editor = vim_file
+    else if os.path.isfile(notepad_file):
+        editor = notepad_file
+    else:
+        print('Please install either vim or notepad++')
         sys.exit()
 
 # compare the output of a student's program to the reference output, writing the results into a
