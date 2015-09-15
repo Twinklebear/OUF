@@ -4,14 +4,16 @@ import sys
 import difflib
 import re
 import shutil
+import json
+import canvas
 
 if len(sys.argv) < 3:
-    print('Usage: test_cl.py homework compile/run/check/grade')
+    print('Usage: test_cl.py homework compile/run/check/grade/upload')
     sys.exit()
 
 notepad_file = 'C:/Program Files (x86)/Notepad++/notepad++.exe'
 vim_file = 'C:/Program Files (x86)/Vim/vim74/gvim.exe'
-editor = notepad_file
+editor = vim_file
 if sys.argv[2] == 'grade':
     if not os.path.isfile(editor):
         if editor == notepad_file:
@@ -91,6 +93,39 @@ def check_grading(grade_file):
     grade_content = open(grade_file, 'r').readlines()
     return not (match_score.match(grade_content[-1]) is None)
 
+# Compile all the *_grade.txt files for a student into a single one and
+# compute the overall score. Then submit the grade for the assignment
+# and post the compile grade files as a comment on it
+def upload_grade(canvas, student_files):
+    grade_files = [f for f in student_files if f.endswith("_grade.txt")]
+    if len(grade_files) == 0:
+        print('Error! Can\'t upload grade for an ungraded student!')
+        sys.exit(1)
+
+    grade_info = ['Total Score']
+    grade_total = 0
+    for f in grade_files:
+        with open(f, 'r') as fg:
+            grade_info.append('####### ' + f + ' ########\n')
+            lines = fg.readlines()
+            # Find the grade for this assignment and add it to the total
+            assignment_score = match_score.match(lines[-1])
+            if assignment_score:
+                grade_total += int(assignment_score.group(1))
+            grade_info += lines
+            grade_info.append('################################\n\n')
+
+    grade_info[0] = 'Total Score: ' + str(grade_total) + '\n\n'
+    grade_comment = ''.join(grade_info)
+    with open('grade_out.txt', 'w') as f:
+        f.write(grade_comment)
+
+    with open('AUTOGRADE.json', 'r') as f:
+        student = json.load(f)
+        canvas.gradeAndCommentSubmission(None, student['canvasSubmission']['assignment_id'],
+            student['canvasStudent']['id'], grade_total, grade_comment)
+
+
 print('Grading ' + sys.argv[1])
 main_dir = os.path.abspath('.')
 homework_dir = os.path.abspath('./submissions/' + sys.argv[1])
@@ -106,6 +141,14 @@ for student_dir in student_dirs:
     files = []
     for _, _, f in os.walk(student_dir):
         files += f
+    # Compile the student's grade files into a single comment text and
+    # submit their grade on canvas
+    if sys.argv[2] == 'upload':
+        c = canvas.canvas()
+        courses = c.getCourses()
+        course_id = c.findCourseId(courses, 'CS 6962-001 Fall 2015 Programming for Engineers')
+        c = canvas.canvas(courseId=course_id)
+        upload_grade(c, files)
     for file in files:
         base, ext = os.path.splitext(file)
         if ext == '.cpp' or ext == '.cc':
