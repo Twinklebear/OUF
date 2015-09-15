@@ -1,21 +1,50 @@
 import os
 import subprocess
 import sys
+import difflib
+import re
 
 if len(sys.argv) < 3:
     print 'Usage: test_cl.py homework compile/run/check/grade'
     sys.exit()
 
 notepad_file = 'C:/Program Files (x86)/Notepad++/notepad++.exe'
+vim_file = 'C:/Program Files (x86)/Vim/vim74/gvim.exe'
+editor = notepad_file
 if sys.argv[2] == 'grade':
-    if not os.path.isfile(notepad_file):
-        print 'Please install Notepad++'
+    if not os.path.isfile(editor):
+        if editor == notepad_file:
+            print 'Please install Notepad++'
+        else:
+            print 'Please install gvim'
         sys.exit()
 
 # compare the output of a student's program to the reference output, writing the results into a
 # given result file
 def compare(reference_output, student_output, result_file):
-    pass # TODO
+    diff = ''
+    difference_count = 0
+    case_number = 0
+    match_case_number = re.compile(" Case (\d+):")
+    with open(reference_output, 'r') as ref_out:
+        with open(student_output, 'r') as student_out:
+            reference = ref_out.readlines()
+            student = student_out.readlines()
+            # TODO: Strip leading/trailing whitespace and newlines from student solution
+            # TODO: Track which test case we're in and if we've already deducted to not
+            # deduct multiple times for one issue
+            for line in difflib.unified_diff(reference, student, fromfile='reference', tofile='student'):
+                print line
+                case_match = match_case_number.match(line)
+                if case_match:
+                    case_number = int(case_match.group(1))
+                    print 'Now in case ', case_number
+                if line.startswith('-'):
+                    difference_count += 1
+                diff += line
+    with open(result_file, 'w') as result_out:
+        result_out.write(diff)
+        result_out.write('\nDifference Count: ' + str(difference_count) + '\n')
 
 # count the number of compiler warnings and errors in the input file, and write the results to the
 # output file
@@ -31,12 +60,12 @@ def count_warnings_errors(input_file, output_file):
                 ++error_count
     with open(output_file, 'a') as f:
         f.write('\n')
-        f.write('Warnings: ' + warning_count + '\n')
-        f.write('Errors: ' + error_count + '\n')
+        f.write('Warnings: ' + str(warning_count) + '\n')
+        f.write('Errors: ' + str(error_count) + '\n')
 
 print 'Grading', sys.argv[1]
 main_dir = os.path.abspath('.')
-homework_dir = os.path.abspath('./autograder/' + sys.argv[1])
+homework_dir = os.path.abspath('./submissions/' + sys.argv[1])
 for student_dir in os.walk(homework_dir).next()[1]:
     student_dir = os.path.abspath(homework_dir + '/' + student_dir)
     os.chdir(student_dir)
