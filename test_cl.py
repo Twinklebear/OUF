@@ -17,7 +17,7 @@ editor = vim_file
 if sys.argv[2] == 'grade':
     if os.path.isfile(vim_file):
         editor = vim_file
-    else if os.path.isfile(notepad_file):
+    elif os.path.isfile(notepad_file):
         editor = notepad_file
     else:
         print('Please install either vim or notepad++')
@@ -134,7 +134,17 @@ homework_dir = os.path.abspath('./submissions/' + sys.argv[1])
 for dir in next(os.walk(homework_dir))[1]:
     student_dir = os.path.abspath(homework_dir + '/' + dir)
     os.chdir(student_dir)
-    # Collect the list of all of the student's files
+    # Collect the list of all of the student's files if we're uploading their
+    # total score
+    if sys.argv[2] == 'upload':
+        files = [f for f in next(os.walk(student_dir))[2]]
+        c = canvas.canvas()
+        courses = c.getCourses()
+        course_id = c.findCourseId(courses, 'CS 6962-001 Fall 2015 Programming for Engineers')
+        c = canvas.canvas(courseId=course_id)
+        upload_grade(c, files)
+        continue
+
     for file in next(os.walk(student_dir))[2]:
         base, ext = os.path.splitext(file)
         if ext == '.cpp' or ext == '.cc':
