@@ -166,17 +166,29 @@ for dir in next(os.walk(homework_dir))[1]:
                 print('Compiling ' + file)
                 with open(cl_stdout_file, 'w') as cl_stdout:
                     subprocess.Popen(['cl.exe', '/W4', '/EHsc', file], stdout=cl_stdout,
-                            universal_newlines=True)
+                        universal_newlines=True)
             # Run all student programs and save output results
             elif sys.argv[2] == 'run':
                 print('Running ' + base + '.exe')
+                prog = None
                 if os.path.isfile(stdin_file): # run with input
                     with open(stdin_file, 'r') as stdin_, open(stdout_file, 'w') as stdout_:
-                        subprocess.Popen([base], stdin=stdin_, stdout=stdout_, universal_newlines=True)
+                        try:
+                            prog = subprocess.Popen([base + '.exe'], stdin=stdin_, stdout=stdout_, universal_newlines=True)
+                            prog.wait(5000)
+                        except TimeoutExpired:
+                            prog.kill()
+                        except:
+                            pass
                 else: # run without input
-                    if (os.path.isfile('./' + base + '.exe')):
-                        with open(stdout_file, 'w') as stdout_:
-                            subprocess.Popen([base + '.exe'], stdout=stdout_, universal_newlines=True)
+                    with open(stdout_file, 'w') as stdout_:
+                        try:
+                            prog = subprocess.Popen([base + '.exe'], stdout=stdout_, universal_newlines=True)
+                            prog.wait(5000)
+                        except TimeoutExpired:
+                            prog.kill()
+                        except:
+                            pass
             # Diff student outputs with the expected solution
             elif sys.argv[2] == 'check':
                 print('Checking ' + base)
