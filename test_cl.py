@@ -55,9 +55,9 @@ def count_warnings_errors(input_file, output_file):
         content = f.readlines()
         for line in content:
             if line.find('warning C') != -1:
-                ++warning_count
+                warning_count += 1
             elif line.find('error C') != -1:
-                ++error_count
+                error_count += 1
     with open(output_file, 'a') as f:
         f.write('\n')
         f.write('Warnings: ' + str(warning_count) + '\n')
