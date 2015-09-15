@@ -130,26 +130,11 @@ print('Grading ' + sys.argv[1])
 main_dir = os.path.abspath('.')
 homework_dir = os.path.abspath('./submissions/' + sys.argv[1])
 # Collect the list of all student directories
-student_dirs = []
-for _, s, _ in os.walk(homework_dir):
-    student_dirs += s
-
-for student_dir in student_dirs:
-    student_dir = os.path.abspath(homework_dir + '/' + student_dir)
+for dir in next(os.walk(homework_dir))[1]:
+    student_dir = os.path.abspath(homework_dir + '/' + dir)
     os.chdir(student_dir)
     # Collect the list of all of the student's files
-    files = []
-    for _, _, f in os.walk(student_dir):
-        files += f
-    # Compile the student's grade files into a single comment text and
-    # submit their grade on canvas
-    if sys.argv[2] == 'upload':
-        c = canvas.canvas()
-        courses = c.getCourses()
-        course_id = c.findCourseId(courses, 'CS 6962-001 Fall 2015 Programming for Engineers')
-        c = canvas.canvas(courseId=course_id)
-        upload_grade(c, files)
-    for file in files:
+    for file in next(os.walk(student_dir))[2]:
         base, ext = os.path.splitext(file)
         if ext == '.cpp' or ext == '.cc':
             cl_stdout_file = base + '_cl.txt'
