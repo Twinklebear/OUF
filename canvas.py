@@ -58,12 +58,13 @@ class canvas():
                 urlString = self.CANVAS_API+url
             else:
                 urlString = url
+            print('canvas api = {}, token = {}'.format(self.CANVAS_API, self.CANVAS_TOKEN))
         
             print("Requesting: " +urlString)
             request = urllib.request.Request(urlString)
             request.add_header("Authorization", "Bearer " + self.CANVAS_TOKEN);
             response = urllib.request.urlopen(request)
-            json_string = response.readall().decode('utf-8');
+            json_string = response.read().decode('utf-8');
             retVal = json.loads(json_string)
 
             # Deal with pagination:
@@ -165,6 +166,21 @@ class canvas():
                      "/submissions/"+str(studentId)+"?"+
                      urllib.parse.urlencode({"comment[text_comment]" : comment}))
 
+    # Upload the score for a student's submission and comment on it with our grading summary file
+    def gradeAndCommentSubmission(self, courseId, assignmentId, studentId, points, comment):
+        courseId = courseId or self.courseId
+        if courseId == None:
+            print("Can't comment on submissions without a courseId.")
+            exit(1)
+        if assignmentId == None or studentId == None:
+            printf("Can't comment on a submission without a assignment ID and a student ID.")
+            exit(1)
+        
+        self.makePut("courses/"+str(courseId)+
+                     "/assignments/"+str(assignmentId)+
+                     "/submissions/"+str(studentId)+"?"+
+                     urllib.parse.urlencode({"submission[posted_grade]": str(points),
+                         "comment[text_comment]": comment}))
     
     def getSubmissions(self, courseId=None, assignmentId=None, studentId=None):
         """Gets all submissions for a course, all submissions for a student in a course, or all submissions for a specific assignment+student combination."""
