@@ -92,15 +92,18 @@ def count_warnings_errors(input_file, output_file):
 def grade(file, stdout_file, result_file, grade_file, ref_stdout_file):
     # Copy autograde summary (diff, warnings, failed case report) to the
     # final grade file
-    shutil.copyfile(result_file, grade_file)
+    if not check_grading(grade_file):
+        shutil.copyfile(result_file, grade_file)
     if os.path.isfile(ref_stdout_file):
-        subprocess.call([editor, file, result_file, stdout_file, ref_stdout_file, grade_file])
+        subprocess.call([editor, file, stdout_file, ref_stdout_file, grade_file])
     else:
-        subprocess.call([editor, file, result_file, stdout_file, grade_file])
+        subprocess.call([editor, file, stdout_file, grade_file])
 
 match_score = re.compile("Grade: (\d+)")
 # Check that a score was correctly assigned to the problem
 def check_grading(grade_file):
+    if not os.path.isfile(grade_file):
+        return False
     grade_content = open(grade_file, 'r').readlines()
     return not (match_score.match(grade_content[-1]) is None)
 
@@ -205,14 +208,15 @@ for dir in next(os.walk(homework_dir))[1]:
                 if (os.path.isfile(check_prog)): # use the check program
                     print('Using ' + check_prog)
                     with open(stdout_file, 'r') as stdout_, open(result_file, 'w') as result_:
-                        subprocess.Popen([check_prog], stdin=stdout_, stdout=result_,
-                                universal_newlines=True)
+                        check = subprocess.Popen([check_prog], stdin=stdout_, stdout=result_,
+                            universal_newlines=True)
+                        check.wait()
                 else: # simply compare output files
                     compare(ref_stdout_file, stdout_file, result_file, reference_cpp_file)
                 # count the number of warnings and errors
                 count_warnings_errors(cl_stdout_file, result_file)
             # Open the student programs and outputs for final grading
-            elif sys.argv[2] == 'grade':
+            elif (sys.argv[2] == 'grade' and not check_grading(grade_file)) or sys.argv[2] == 'regrade':
                 grade(file, stdout_file, result_file, grade_file, ref_stdout_file)
                 # Check that a final grade for the assignment has been entered in the grade file
                 while not check_grading(grade_file):
