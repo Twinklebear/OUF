@@ -219,7 +219,6 @@ for dir in next(os.walk(homework_dir))[1]:
             elif (sys.argv[2] == 'grade' and not check_grading(grade_file)) or sys.argv[2] == 'regrade':
                 grade(file, stdout_file, result_file, grade_file, ref_stdout_file)
                 # Check that a final grade for the assignment has been entered in the grade file
-                while not check_grading(grade_file):
+                if not check_grading(grade_file):
                     print("Error! No grade assigned for " + file)
-                    grade(file, stdout_file, result_file, grade_file, ref_stdout_file)
 
