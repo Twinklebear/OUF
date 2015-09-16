@@ -58,7 +58,6 @@ class canvas():
                 urlString = self.CANVAS_API+url
             else:
                 urlString = url
-            print('canvas api = {}, token = {}'.format(self.CANVAS_API, self.CANVAS_TOKEN))
         
             print("Requesting: " +urlString)
             request = urllib.request.Request(urlString)
