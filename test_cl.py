@@ -94,10 +94,9 @@ def grade(file, stdout_file, result_file, grade_file, ref_stdout_file):
     # final grade file
     shutil.copyfile(result_file, grade_file)
     if os.path.isfile(ref_stdout_file):
-        subprocess.call([editor, file, result_file, stdout_file, grade_file])
+        subprocess.call([editor, file, result_file, stdout_file, ref_stdout_file, grade_file])
     else:
-        subprocess.call([editor, file, result_file, stdout_file, ref_stdout_file,
-            grade_file])
+        subprocess.call([editor, file, result_file, stdout_file, grade_file])
 
 match_score = re.compile("Grade: (\d+)")
 # Check that a score was correctly assigned to the problem
