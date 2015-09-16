@@ -178,7 +178,7 @@ for dir in next(os.walk(homework_dir))[1]:
                     subprocess.Popen(['cl.exe', '/W4', '/EHsc', file], stdout=cl_stdout,
                         universal_newlines=True)
             # Run all student programs and save output results
-            elif sys.argv[2] == 'run':
+            elif (not os.path.getsize(stdout_file) and sys.argv[2] == 'run') or (sys.argv[2] == 'rerun'):
                 exe = base + '.exe'
                 print('Running ' + exe)
                 prog = None
