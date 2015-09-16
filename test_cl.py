@@ -34,8 +34,7 @@ def compare(reference_output, student_output, result_file, reference_cpp_file):
     match_case_number = re.compile(" Case (\d+):")
 
     if os.path.isfile(reference_output):
-        with open(reference_output, 'r') as ref_out:
-            with open(student_output, 'r') as student_out:
+        with open(reference_output, 'r') as ref_out, open(student_output, 'r') as student_out:
                 reference = ref_out.readlines()
                 student = student_out.readlines()
                 # TODO: Strip leading/trailing whitespace and newlines from student solution
@@ -144,6 +143,13 @@ print('Grading ' + sys.argv[1])
 main_dir = os.path.abspath('.')
 homework_dir = os.path.abspath('./submissions/' + sys.argv[1])
 ref_homework_dir = os.path.abspath('./reference/' + sys.argv[1])
+# Collect list of all program files we're expecting to find
+ref_file_names = []
+for f in next(os.walk(ref_homework_dir))[2]:
+    base, ext = os.path.splitext(f)
+    if not base.endswith('_check') and (ext == '.cpp' or ext == '.cc'):
+        ref_file_names.append(f)
+
 # Collect the list of all student directories
 for dir in next(os.walk(homework_dir))[1]:
     student_dir = os.path.abspath(homework_dir + '/' + dir)
@@ -163,6 +169,11 @@ for dir in next(os.walk(homework_dir))[1]:
     for file in next(os.walk(student_dir))[2]:
         base, ext = os.path.splitext(file)
         if ext == '.cpp' or ext == '.cc':
+            # Skip incorrectly named files
+            #if not (file in ref_file_names):
+            #    print('Skipping incorrectly named encountered: ' + file)
+            #    continue
+
             cl_stdout_file = base + '_cl.txt'
             stdin_file = ref_homework_dir + '/' + base + '_stdin.txt'
             stdout_file = base + '_stdout.txt'
@@ -178,7 +189,8 @@ for dir in next(os.walk(homework_dir))[1]:
                     subprocess.Popen(['cl.exe', '/W4', '/EHsc', file], stdout=cl_stdout,
                         universal_newlines=True)
             # Run all student programs and save output results
-            elif (not os.path.getsize(stdout_file) and sys.argv[2] == 'run') or (sys.argv[2] == 'rerun'):
+            elif ((not os.path.isfile(stdout_file) or not os.path.getsize(stdout_file))\
+					and sys.argv[2] == 'run') or (sys.argv[2] == 'rerun'):
                 exe = base + '.exe'
                 print('Running ' + exe)
                 prog = None
