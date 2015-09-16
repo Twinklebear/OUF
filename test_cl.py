@@ -24,15 +24,16 @@ if sys.argv[2] == 'grade':
         sys.exit()
 
 # compare the output of a student's program to the reference output, writing the results into a
-# given result file
-def compare(reference_output, student_output, result_file):
+# given result file. we also need the name of the reference .cpp file, since this will tell us
+# whether the student has named their file correctly
+def compare(reference_output, student_output, result_file, reference_cpp_file):
     diff = ''
     case_failed_count = 0
     case_number = 0
     case_failed = False
     match_case_number = re.compile(" Case (\d+):")
 
-    if os.path.isfile(reference_output) and os.path.isfile(student_output):
+    if os.path.isfile(reference_output):
         with open(reference_output, 'r') as ref_out:
             with open(student_output, 'r') as student_out:
                 reference = ref_out.readlines()
@@ -49,9 +50,14 @@ def compare(reference_output, student_output, result_file):
                         case_failed_count += 1
                         case_failed = True
                     diff += line
-    elif not os.path.isfile(student_output): # student program produces no outputs
+    elif not os.path.getsize(student_output): # student program produces no outputs (NOTE: this output
+                                              # file is there even if the student program didn't run,
+                                              # so we need to check for the size)
         case_failed_count = 1
-    elif not os.path.isfile(reference_output): # this problem has no reference outputs
+    elif not os.path.isfile(reference_cpp_file): # student named their file wrongly
+        case_failed_count = 1
+    elif not os.path.isfile(reference_output): # this problem has no reference outputs, and no check
+                                               # program, so we need to check manually
         case_failed_count = 0
 
     with open(result_file, 'w') as result_out:
@@ -59,8 +65,8 @@ def compare(reference_output, student_output, result_file):
         result_out.write('\nCases Failed: ' + str(case_failed_count) + '\n')
         result_out.write('Total Cases: ' + str(case_number + 1) + '\n')
 
-match_warning = re.compile('.*: warning C\d+:')
-match_error = re.compile('.*: error C\d+:')
+match_warning = re.compile('.* warning C\d+:')
+match_error = re.compile('.* error C\d+:')
 # count the number of compiler warnings and errors in the input file, and write the results to the
 # output file
 def count_warnings_errors(input_file, output_file):
@@ -69,7 +75,6 @@ def count_warnings_errors(input_file, output_file):
     with open(input_file, 'r') as f:
         content = f.readlines()
         for line in content:
-            print(line)
             warning = match_warning.match(line)
             if warning:
                 warnings.append(line)
@@ -136,6 +141,7 @@ def upload_grade(canvas, student_files):
 print('Grading ' + sys.argv[1])
 main_dir = os.path.abspath('.')
 homework_dir = os.path.abspath('./submissions/' + sys.argv[1])
+ref_homework_dir = os.path.abspath('./reference/' + sys.argv[1])
 # Collect the list of all student directories
 for dir in next(os.walk(homework_dir))[1]:
     student_dir = os.path.abspath(homework_dir + '/' + dir)
@@ -156,12 +162,13 @@ for dir in next(os.walk(homework_dir))[1]:
         base, ext = os.path.splitext(file)
         if ext == '.cpp' or ext == '.cc':
             cl_stdout_file = base + '_cl.txt'
-            stdin_file = homework_dir + '/' + base + '_stdin.txt'
+            stdin_file = ref_homework_dir + '/' + base + '_stdin.txt'
             stdout_file = base + '_stdout.txt'
-            ref_stdout_file = homework_dir + '/' + base + '_stdout.txt'
+            ref_stdout_file = ref_homework_dir + '/' + base + '_stdout.txt'
             result_file = base + '_results.txt'
             grade_file = base + '_grade.txt'
-            check_prog = homework_dir + '/' + base + '_check.exe'
+            check_prog = ref_homework_dir + '/' + base + '_check.exe'
+            reference_cpp_file = ref_homework_dir + '/' + file
             # Compile student's programs
             if sys.argv[2] == 'compile':
                 print('Compiling ' + file)
@@ -197,11 +204,12 @@ for dir in next(os.walk(homework_dir))[1]:
             elif sys.argv[2] == 'check':
                 print('Checking ' + base)
                 if (os.path.isfile(check_prog)): # use the check program
+                    print('Using ' + check_prog)
                     with open(stdout_file, 'r') as stdout_, open(result_file, 'w') as result_:
                         subprocess.Popen([check_prog], stdin=stdout_, stdout=result_,
                                 universal_newlines=True)
                 else: # simply compare output files
-                    compare(ref_stdout_file, stdout_file, result_file)
+                    compare(ref_stdout_file, stdout_file, result_file, reference_cpp_file)
                 # count the number of warnings and errors
                 count_warnings_errors(cl_stdout_file, result_file)
             # Open the student programs and outputs for final grading
