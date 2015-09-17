@@ -188,7 +188,7 @@ def plagiarism_check(ref_file_names, homework_dir):
                     diff_count = 0
                     other_file = open(name, 'r').readlines()
                     for l in difflib.unified_diff(content, other_file,
-                            fromfile=d + name, tofile=other + name):
+                            fromfile=student_dir + '\\' + name, tofile=other + '\\' + name):
                         if l.startswith('-') and not l.startswith('---'):
                             diff_count += 1
                         diff += l
