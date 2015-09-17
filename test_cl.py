@@ -266,5 +266,5 @@ for dir in next(os.walk(homework_dir))[1]:
 # Compute final score statistics and log them
 if sys.argv[2] == 'stats':
     print("Score Summary:\n\tMean = {}\n\tStd dev = {}\n\tMedian = {}\n\t".format(
-        statistics.mean(grade_stats), statistics.stddev(grade_stats),
-        statisitcs.median(grade_stats)))
+        statistics.mean(grade_stats), statistics.stdev(grade_stats),
+        statistics.median(grade_stats)))
