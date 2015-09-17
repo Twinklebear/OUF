@@ -165,7 +165,7 @@ def compute_total_score(student_files):
 # Perform a very simple plagiarism checking pass by diffing student's files against each other
 # Will alert if the student's files don't differ by more than some threshold of lines
 def plagiarism_check(ref_file_names, homework_dir):
-    plagiarism_diff_threshold = 4
+    plagiarism_diff_threshold = 5
     # Collect the list of all student directories
     for d in next(os.walk(homework_dir))[1]:
         student_dir = os.path.abspath(homework_dir + '/' + d)
@@ -189,7 +189,8 @@ def plagiarism_check(ref_file_names, homework_dir):
                     other_file = open(name, 'r').readlines()
                     for l in difflib.unified_diff(content, other_file,
                             fromfile=student_dir + '\\' + name, tofile=other + '\\' + name):
-                        if l.startswith('-') and not l.startswith('---'):
+                        if (l.startswith('-') and not l.startswith('---')) \
+                                or (l.startswith('+') and not l.startswith('+++')):
                             diff_count += 1
                         diff += l
                     if diff_count <= plagiarism_diff_threshold:
