@@ -10,7 +10,7 @@ import statistics
 import matplotlib.pyplot as plt
 
 if len(sys.argv) < 3:
-    print('Usage: test_cl.py homework compile/run/check/grade/stats/upload')
+    print('Usage: test_cl.py homework compile/run/check/grade/stats/upload/plagiarism')
     sys.exit()
 
 notepad_file = 'C:/Program Files (x86)/Notepad++/notepad++.exe'
@@ -162,6 +162,41 @@ def compute_total_score(student_files):
                 grade_total += int(assignment_score.group(1))
     return grade_total
 
+# Perform a very simple plagiarism checking pass by diffing student's files against each other
+# Will alert if the student's files don't differ by more than some threshold of lines
+def plagiarism_check(ref_file_names, homework_dir):
+    # Collect the list of all student directories
+    for d in next(os.walk(homework_dir))[1]:
+        student_dir = os.path.abspath(homework_dir + '/' + d)
+        print('Processing student ' + student_dir)
+        os.chdir(student_dir)
+        student_files = {}
+        for name in ref_file_names:
+            if os.path.isfile(name):
+                student_files[name] = open(name, 'r').readlines()
+
+        # Now compare against all other students
+        for o in next(os.walk(homework_dir))[1]:
+            other = os.path.abspath(homework_dir + '/' + o)
+            if d == o:
+                continue
+            os.chdir(other)
+            for name, content in student_files.items():
+                if os.path.isfile(name):
+                    diff = ''
+                    diff_count = 0
+                    other_file = open(name, 'r').readlines()
+                    for l in difflib.unified_diff(content, other_file,
+                            fromfile=d + name, tofile=other + name):
+                        if l.startswith('-') and not l.startswith('---'):
+                            diff_count += 1
+                        diff += l
+                    if diff_count < 3:
+                        print("Student files are similar.\n\tStudent a: {}\n\tStudent b: {}\n\tFile: {}\n"
+                                .format(student_dir, other, name))
+                        print(diff)
+
+
 print('Grading ' + sys.argv[1])
 main_dir = os.path.abspath('.')
 homework_dir = os.path.abspath('./submissions/' + sys.argv[1])
@@ -172,6 +207,10 @@ for f in next(os.walk(ref_homework_dir))[2]:
     base, ext = os.path.splitext(f)
     if not base.endswith('_check') and (ext == '.cpp' or ext == '.cc'):
         ref_file_names.append(f)
+
+if sys.argv[2] == 'plagiarism':
+    plagiarism_check(ref_file_names, homework_dir)
+    sys.exit(0)
 
 grade_stats = []
 # Collect the list of all student directories
