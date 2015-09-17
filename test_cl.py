@@ -6,9 +6,10 @@ import re
 import shutil
 import json
 import canvas
+import statistics
 
 if len(sys.argv) < 3:
-    print('Usage: test_cl.py homework compile/run/check/grade/upload')
+    print('Usage: test_cl.py homework compile/run/check/grade/stats/upload')
     sys.exit()
 
 notepad_file = 'C:/Program Files (x86)/Notepad++/notepad++.exe'
@@ -138,6 +139,22 @@ def upload_grade(canvas, student_files):
         canvas.gradeAndCommentSubmission(None, student['canvasSubmission']['assignment_id'],
             student['canvasStudent']['id'], grade_total, grade_comment)
 
+# Compute the student's total score from their grade files
+def compute_total_score(student_files):
+    grade_files = [f for f in student_files if f.endswith("_grade.txt")]
+    if len(grade_files) == 0:
+        print('Error! Can\'t get grade stats for an ungraded student!')
+        sys.exit(1)
+
+    grade_total = 0
+    for f in grade_files:
+        with open(f, 'r') as fg:
+            lines = fg.readlines()
+            # Find the grade for this assignment and add it to the total
+            assignment_score = match_score.match(lines[-1])
+            if assignment_score:
+                grade_total += int(assignment_score.group(1))
+    return grade_total
 
 print('Grading ' + sys.argv[1])
 main_dir = os.path.abspath('.')
@@ -150,6 +167,7 @@ for f in next(os.walk(ref_homework_dir))[2]:
     if not base.endswith('_check') and (ext == '.cpp' or ext == '.cc'):
         ref_file_names.append(f)
 
+grade_stats = []
 # Collect the list of all student directories
 for dir in next(os.walk(homework_dir))[1]:
     student_dir = os.path.abspath(homework_dir + '/' + dir)
@@ -164,6 +182,10 @@ for dir in next(os.walk(homework_dir))[1]:
         course_id = c.findCourseId(courses, 'CS 6962-001 Fall 2015 Programming for Engineers')
         c = canvas.canvas(courseId=course_id)
         upload_grade(c, files)
+        continue
+    elif sys.argv[2] == 'stats':
+        files = [f for f in next(os.walk(student_dir))[2]]
+        grade_stats.append(compute_total_score(files))
         continue
 
     for file in next(os.walk(student_dir))[2]:
@@ -229,8 +251,15 @@ for dir in next(os.walk(homework_dir))[1]:
                 count_warnings_errors(cl_stdout_file, result_file)
             # Open the student programs and outputs for final grading
             elif (sys.argv[2] == 'grade' and not check_grading(grade_file)) or sys.argv[2] == 'regrade':
+                if sys.argv[2] == 'regrade':
+                    os.remove(grade_file)
                 grade(file, stdout_file, result_file, grade_file, ref_stdout_file)
                 # Check that a final grade for the assignment has been entered in the grade file
                 if not check_grading(grade_file):
                     print("Error! No grade assigned for " + file)
 
+# Compute final score statistics and log them
+if sys.argv[2] == 'stats':
+    print("Score Summary:\n\tMean = {}\n\tStd dev = {}\n\tMedian = {}\n\t".format(
+        statistics.mean(grade_stats), statistics.stddev(grade_stats),
+        statisitcs.median(grade_stats)))
