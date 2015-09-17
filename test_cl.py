@@ -7,6 +7,7 @@ import shutil
 import json
 import canvas
 import statistics
+import matplotlib.pyplot as plt
 
 if len(sys.argv) < 3:
     print('Usage: test_cl.py homework compile/run/check/grade/stats/upload')
@@ -268,3 +269,8 @@ if sys.argv[2] == 'stats':
     print("Score Summary:\n\tMean = {}\n\tStd dev = {}\n\tMedian = {}\n\tMax = {}\n\tMin = {}\n"
             .format(statistics.mean(grade_stats), statistics.stdev(grade_stats),
                 statistics.median(grade_stats), max(grade_stats), min(grade_stats)))
+    plt.hist(grade_stats, bins=20)
+    plt.title("Histogram")
+    plt.xlabel("Value")
+    plt.ylabel("Frequency")
+    plt.show()
