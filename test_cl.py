@@ -15,7 +15,7 @@ if len(sys.argv) < 3:
 notepad_file = 'C:/Program Files (x86)/Notepad++/notepad++.exe'
 vim_file = 'C:/Program Files (x86)/Vim/vim74/gvim.exe'
 editor = vim_file
-if sys.argv[2] == 'grade':
+if sys.argv[2] == 'grade' or sys.argv[2] == 'regrade':
     if os.path.isfile(vim_file):
         editor = vim_file
     elif os.path.isfile(notepad_file):
@@ -97,7 +97,12 @@ def grade(file, stdout_file, result_file, grade_file, ref_stdout_file):
     if os.path.isfile(ref_stdout_file):
         subprocess.call([editor, file, stdout_file, ref_stdout_file, grade_file])
     else:
+        print(grade_file)
+        print(stdout_file)
+        print(file)
+        print(editor)
         subprocess.call([editor, file, stdout_file, grade_file])
+        print('hello')
 
 match_score = re.compile("Grade: (\d+)")
 # Check that a score was correctly assigned to the problem
