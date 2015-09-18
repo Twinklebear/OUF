@@ -89,6 +89,7 @@ def count_warnings_errors(input_file, output_file):
         f.write('Errors: ' + str(len(errors)) + '\n')
         f.write(''.join(errors))
 
+match_score = re.compile("Grade: (\d+)")
 # Open files for final grading
 def grade(file, stdout_file, result_file, grade_file, ref_stdout_file):
     # Copy autograde summary (diff, warnings, failed case report) to the
@@ -105,7 +106,6 @@ def grade(file, stdout_file, result_file, grade_file, ref_stdout_file):
         subprocess.call([editor, file, stdout_file, grade_file])
         print('hello')
 
-match_score = re.compile("Grade: (\d+)")
 # Check that a score was correctly assigned to the problem
 def check_grading(grade_file):
     if not os.path.isfile(grade_file):
@@ -113,13 +113,10 @@ def check_grading(grade_file):
     grade_content = open(grade_file, 'r').readlines()
     return not (match_score.match(grade_content[-1]) is None)
 
-# Compile all the *_grade.txt files for a student into a single one and
-# compute the overall score. Then submit the grade for the assignment
-# and post the compile grade files as a comment on it
-def upload_grade(canvas, student_files):
+def build_final_score(student_files):
     grade_files = [f for f in student_files if f.endswith("_grade.txt")]
     if len(grade_files) == 0:
-        print('Error! Can\'t upload grade for an ungraded student!')
+        print('Error! Can\'t compute final grade for an ungraded student!')
         sys.exit(1)
 
     grade_info = ['Total Score']
@@ -137,10 +134,21 @@ def upload_grade(canvas, student_files):
 
     grade_info[0] = 'Total Score: ' + str(grade_total) + '\n\n'
     grade_comment = ''.join(grade_info)
-    with open('grade_out.txt', 'w') as f:
+    with open('final_score.diff', 'w') as f:
         f.write(grade_comment)
+    subprocess.call([editor, 'final_score.diff'])
 
-    with open('AUTOGRADE.json', 'r') as f:
+# Compile all the *_grade.txt files for a student into a single one and
+# compute the overall score. Then submit the grade for the assignment
+# and post the compile grade files as a comment on it
+def upload_grade(canvas):
+    with open('AUTOGRADE.json', 'r') as f, open('final_score.diff', 'r') as fg:
+        grade_comment = fg.readlines()
+        grade_match = re.match('Total Score: (\d+)', grade_comment[0])
+        if not grade_match:
+            print('Error grading {}, no total score assigned'.format(os.getcwd()))
+            sys.exit(1)
+        grade_total = int(grade_match.group(1))
         student = json.load(f)
         canvas.gradeAndCommentSubmission(None, student['canvasSubmission']['assignment_id'],
             student['canvasStudent']['id'], grade_total, grade_comment)
@@ -162,43 +170,6 @@ def compute_total_score(student_files):
                 grade_total += int(assignment_score.group(1))
     return grade_total
 
-# Perform a very simple plagiarism checking pass by diffing student's files against each other
-# Will alert if the student's files don't differ by more than some threshold of lines
-def plagiarism_check(ref_file_names, homework_dir):
-    plagiarism_diff_threshold = 5
-    # Collect the list of all student directories
-    for d in next(os.walk(homework_dir))[1]:
-        student_dir = os.path.abspath(homework_dir + '/' + d)
-        print('Processing student ' + student_dir)
-        os.chdir(student_dir)
-        student_files = {}
-        for name in ref_file_names:
-            if os.path.isfile(name):
-                student_files[name] = open(name, 'r').readlines()
-
-        # Now compare against all other students
-        for o in next(os.walk(homework_dir))[1]:
-            other = os.path.abspath(homework_dir + '/' + o)
-            if d == o:
-                continue
-            os.chdir(other)
-            for name, content in student_files.items():
-                if os.path.isfile(name):
-                    diff = ''
-                    diff_count = 0
-                    other_file = open(name, 'r').readlines()
-                    for l in difflib.unified_diff(content, other_file,
-                            fromfile=student_dir + '\\' + name, tofile=other + '\\' + name):
-                        if (l.startswith('-') and not l.startswith('---')) \
-                                or (l.startswith('+') and not l.startswith('+++')):
-                            diff_count += 1
-                        diff += l
-                    if diff_count <= plagiarism_diff_threshold:
-                        print("Student files are similar.\n\tStudent a: {}\n\tStudent b: {}\n\tFile: {}\n"
-                                .format(student_dir, other, name))
-                        print(diff)
-
-
 print('Grading ' + sys.argv[1])
 main_dir = os.path.abspath('.')
 homework_dir = os.path.abspath('./submissions/' + sys.argv[1])
@@ -214,28 +185,29 @@ if sys.argv[2] == 'plagiarism':
     plagiarism_check(ref_file_names, homework_dir)
     sys.exit(0)
 
+if sys.argv[2] == 'upload':
+    c = canvas.canvas()
+    courses = c.getCourses()
+    course_id = c.findCourseId(courses, 'CS 6962-001 Fall 2015 Programming for Engineers')
+    c = canvas.canvas(courseId=course_id)
+
 grade_stats = []
 # Collect the list of all student directories
 for dir in next(os.walk(homework_dir))[1]:
     student_dir = os.path.abspath(homework_dir + '/' + dir)
     print('Processing student ' + student_dir)
     os.chdir(student_dir)
+    files = [f for f in next(os.walk(student_dir))[2]]
     # Collect the list of all of the student's files if we're uploading their
     # total score
     if sys.argv[2] == 'upload':
-        files = [f for f in next(os.walk(student_dir))[2]]
-        c = canvas.canvas()
-        courses = c.getCourses()
-        course_id = c.findCourseId(courses, 'CS 6962-001 Fall 2015 Programming for Engineers')
-        c = canvas.canvas(courseId=course_id)
-        upload_grade(c, files)
+        upload_grade(c)
         continue
     elif sys.argv[2] == 'stats':
-        files = [f for f in next(os.walk(student_dir))[2]]
         grade_stats.append(compute_total_score(files))
         continue
 
-    for file in next(os.walk(student_dir))[2]:
+    for file in files:
         base, ext = os.path.splitext(file)
         if ext == '.cpp' or ext == '.cc':
             # Skip incorrectly named files
@@ -304,6 +276,10 @@ for dir in next(os.walk(homework_dir))[1]:
                 # Check that a final grade for the assignment has been entered in the grade file
                 if not check_grading(grade_file):
                     print("Error! No grade assigned for " + file)
+
+    if sys.argv[2] == 'grade' or sys.argv[2] == 'regrade':
+        build_final_score(files)
+
 
 # Compute final score statistics and log them
 if sys.argv[2] == 'stats':
