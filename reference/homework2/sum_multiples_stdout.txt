@@ -1,0 +1,1 @@
+Sum of mutiples of 6 from 0 to 4000 = 1332666
