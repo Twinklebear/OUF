@@ -116,8 +116,10 @@ def check_grading(grade_file):
 def build_final_score(student_files, score_scale):
     grade_files = [f for f in student_files if f.endswith("_grade.txt")]
     if len(grade_files) == 0:
-        print('Error! Can\'t compute final grade for an ungraded student!')
-        sys.exit(1)
+        print('Error! Can\'t compute final grade for an graded student {}!'
+                .format(os.getcwd()))
+        #sys.exit(1)
+        return
 
     grade_info = ['Total Score']
     grade_total = 0
@@ -154,7 +156,7 @@ def upload_grade(canvas):
             student['canvasStudent']['id'], grade_total, grade_comment)
 
 # Compute the student's total score from their grade files
-def compute_total_score(student_files):
+def compute_total_score(student_files, score_scale):
     grade_files = [f for f in student_files if f.endswith("_grade.txt")]
     if len(grade_files) == 0:
         print('Error! Can\'t get grade stats for an ungraded student!')
@@ -167,7 +169,7 @@ def compute_total_score(student_files):
             # Find the grade for this assignment and add it to the total
             assignment_score = match_score.match(lines[-1])
             if assignment_score:
-                grade_total += int(assignment_score.group(1))
+                grade_total += int(assignment_score.group(1)) * score_scales[f]
     return grade_total
 
 print('Grading ' + sys.argv[1])
@@ -204,7 +206,7 @@ for dir in next(os.walk(homework_dir))[1]:
         upload_grade(c)
         continue
     elif sys.argv[2] == 'stats':
-        grade_stats.append(compute_total_score(files))
+        grade_stats.append(compute_total_score(files, score_scales))
         continue
 
     for file in files:
