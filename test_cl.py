@@ -278,7 +278,8 @@ for dir in next(os.walk(homework_dir))[1]:
                     print("Error! No grade assigned for " + file)
 
     if sys.argv[2] == 'grade' or sys.argv[2] == 'regrade':
-        build_final_score(files, score_scales)
+        graded_files = [f for f in next(os.walk(student_dir))[2]]
+        build_final_score(graded_files, score_scales)
 
 
 # Compute final score statistics and log them
