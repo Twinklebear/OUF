@@ -227,8 +227,9 @@ for dir in next(os.walk(homework_dir))[1]:
             if sys.argv[2] == 'compile':
                 print('Compiling ' + file)
                 with open(cl_stdout_file, 'w') as cl_stdout:
-                    subprocess.Popen(['cl.exe', '/W4', '/EHsc', file], stdout=cl_stdout,
+                    build = subprocess.Popen(['cl.exe', '/W4', '/EHsc', file], stdout=cl_stdout,
                         universal_newlines=True)
+                    build.wait()
             # Run all student programs and save output results
             elif ((not os.path.isfile(stdout_file) or not os.path.getsize(stdout_file))\
 					and sys.argv[2] == 'run') or (sys.argv[2] == 'rerun'):
