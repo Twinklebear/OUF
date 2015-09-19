@@ -10,7 +10,7 @@ import statistics
 import matplotlib.pyplot as plt
 
 if len(sys.argv) < 3:
-    print('Usage: test_cl.py homework compile/run/check/grade/stats/upload/plagiarism')
+    print('Usage: test_cl.py homework compile/run/check/grade/stats/upload')
     sys.exit()
 
 notepad_file = 'C:/Program Files (x86)/Notepad++/notepad++.exe'
@@ -113,7 +113,7 @@ def check_grading(grade_file):
     grade_content = open(grade_file, 'r').readlines()
     return not (match_score.match(grade_content[-1]) is None)
 
-def build_final_score(student_files):
+def build_final_score(student_files, score_scale):
     grade_files = [f for f in student_files if f.endswith("_grade.txt")]
     if len(grade_files) == 0:
         print('Error! Can\'t compute final grade for an ungraded student!')
@@ -128,7 +128,7 @@ def build_final_score(student_files):
             # Find the grade for this assignment and add it to the total
             assignment_score = match_score.match(lines[-1])
             if assignment_score:
-                grade_total += int(assignment_score.group(1))
+                grade_total += int(assignment_score.group(1)) * score_scales[f]
             grade_info += lines
             grade_info.append('################################\n\n')
 
@@ -176,14 +176,14 @@ homework_dir = os.path.abspath('./submissions/' + sys.argv[1])
 ref_homework_dir = os.path.abspath('./reference/' + sys.argv[1])
 # Collect list of all program files we're expecting to find
 ref_file_names = []
+score_scales = {}
 for f in next(os.walk(ref_homework_dir))[2]:
     base, ext = os.path.splitext(f)
     if not base.endswith('_check') and (ext == '.cpp' or ext == '.cc'):
         ref_file_names.append(f)
+        with open(ref_homework_dir + '/' + f, 'r') as scale:
+            score_scales[base + '_grade.txt'] = int(scale.readlines()[0]) / 10.0
 
-if sys.argv[2] == 'plagiarism':
-    plagiarism_check(ref_file_names, homework_dir)
-    sys.exit(0)
 
 if sys.argv[2] == 'upload':
     c = canvas.canvas()
@@ -211,9 +211,9 @@ for dir in next(os.walk(homework_dir))[1]:
         base, ext = os.path.splitext(file)
         if ext == '.cpp' or ext == '.cc':
             # Skip incorrectly named files
-            #if not (file in ref_file_names):
-            #    print('Skipping incorrectly named encountered: ' + file)
-            #    continue
+            if not (file in ref_file_names):
+                print('Skipping incorrectly named encountered: ' + file)
+                continue
 
             cl_stdout_file = base + '_cl.txt'
             stdin_file = ref_homework_dir + '/' + base + '_stdin.txt'
@@ -278,7 +278,7 @@ for dir in next(os.walk(homework_dir))[1]:
                     print("Error! No grade assigned for " + file)
 
     if sys.argv[2] == 'grade' or sys.argv[2] == 'regrade':
-        build_final_score(files)
+        build_final_score(files, score_scales)
 
 
 # Compute final score statistics and log them
