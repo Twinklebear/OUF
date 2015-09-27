@@ -37,11 +37,8 @@ def compare(reference_output, student_output, result_file, reference_cpp_file):
 
     if os.path.isfile(reference_output):
         with open(reference_output, 'r') as ref_out, open(student_output, 'r') as student_out:
-                reference = ref_out.readlines()
-                student = student_out.readlines()
-                # TODO: Strip leading/trailing whitespace and newlines from student solution
-                # but don't strip the last newline character? Or strip all trailing and stick
-                # the last newline character back on
+                reference = [l.strip() + "\n" for l in ref_out.readlines() if l.strip()]
+                student = [l.strip() + "\n" for l in student_out.readlines() if l.strip()]
                 for line in difflib.unified_diff(reference, student, fromfile='reference', tofile='student'):
                     case_match = match_case_number.match(line)
                     if case_match:
