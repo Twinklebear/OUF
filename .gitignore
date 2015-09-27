@@ -4,4 +4,5 @@ submissions/
 *.pyc
 *.exe
 *.obj
+reference/test/
 
