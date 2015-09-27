@@ -1,0 +1,12 @@
+Case 0:
+4
+Case 1:
+12
+Case 2:
+5
+Case 3:
+10
+Case 4:
+1
+Case 5:
+6

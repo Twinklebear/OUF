@@ -1,0 +1,42 @@
+Case 0:
+**************************
+*                        *
+* Hello, Rick            *
+* Welcome to my program  *
+*                        *
+**************************
+Case 1:
+*******************************************
+*                                         *
+* Hello, Richard Jones-Hairdo the Second  *
+* Welcome to my program                   *
+*                                         *
+*******************************************
+Case 2:
+**************************
+*                        *
+* Hello, Jim             *
+* Welcome to my program  *
+*                        *
+**************************
+Case 3:
+**************************
+*                        *
+* Hello, H               *
+* Welcome to my program  *
+*                        *
+**************************
+Case 4:
+**************************
+*                        *
+* Hello, Welcome to cat  *
+* Welcome to my program  *
+*                        *
+**************************
+Case 5:
+********************************************************
+*                                                      *
+* Hello, Tweebuffelsmeteenskootmorsdoodgeskietfontein  *
+* Welcome to my program                                *
+*                                                      *
+********************************************************
