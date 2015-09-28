@@ -94,17 +94,12 @@ match_score = re.compile("Grade: (\d+)")
 def grade(file, stdout_file, result_file, grade_file, ref_stdout_file):
     # Copy autograde summary (diff, warnings, failed case report) to the
     # final grade file
-    if not check_grading(grade_file):
+    if not check_grading(grade_file) and os.path.isfile(result_file):
         shutil.copyfile(result_file, grade_file)
     if os.path.isfile(ref_stdout_file):
         subprocess.call([editor, file, stdout_file, ref_stdout_file, grade_file])
     else:
-        print(grade_file)
-        print(stdout_file)
-        print(file)
-        print(editor)
         subprocess.call([editor, file, stdout_file, grade_file])
-        print('hello')
 
 # Check that a score was correctly assigned to the problem
 def check_grading(grade_file):
