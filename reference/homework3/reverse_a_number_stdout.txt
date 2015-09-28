@@ -1,0 +1,18 @@
+Case 0:
+764321
+Case 1:
+7614
+Case 2:
+Invalid input
+Case 3:
+0001
+Case 4:
+9201856
+Case 5:
+Invalid input
+Case 6:
+202
+Case 7:
+5
+Case 8:
+Invalid input

@@ -37,11 +37,8 @@ def compare(reference_output, student_output, result_file, reference_cpp_file):
 
     if os.path.isfile(reference_output):
         with open(reference_output, 'r') as ref_out, open(student_output, 'r') as student_out:
-                reference = ref_out.readlines()
-                student = student_out.readlines()
-                # TODO: Strip leading/trailing whitespace and newlines from student solution
-                # but don't strip the last newline character? Or strip all trailing and stick
-                # the last newline character back on
+                reference = [l.strip() + "\n" for l in ref_out.readlines() if l.strip()]
+                student = [l.strip() + "\n" for l in student_out.readlines() if l.strip()]
                 for line in difflib.unified_diff(reference, student, fromfile='reference', tofile='student'):
                     case_match = match_case_number.match(line)
                     if case_match:
@@ -89,7 +86,7 @@ def count_warnings_errors(input_file, output_file):
         f.write('Errors: ' + str(len(errors)) + '\n')
         f.write(''.join(errors))
 
-match_score = re.compile("Grade: (\d+)")
+match_score = re.compile("Grade: (\d+\.*\d*)")
 # Open files for final grading
 def grade(file, stdout_file, result_file, grade_file, ref_stdout_file):
     # Copy autograde summary (diff, warnings, failed case report) to the
@@ -111,7 +108,7 @@ def check_grading(grade_file):
 def build_final_score(student_files, score_scale):
     grade_files = [f for f in student_files if f.endswith("_grade.txt")]
     if len(grade_files) == 0:
-        print('Error! Can\'t compute final grade for an graded student {}!'
+        print('Error! Can\'t compute final grade for an ungraded student {}!'
                 .format(os.getcwd()))
         #sys.exit(1)
         return
@@ -141,7 +138,7 @@ def build_final_score(student_files, score_scale):
 def upload_grade(canvas):
     with open('AUTOGRADE.json', 'r') as f, open('final_score.diff', 'r') as fg:
         grade_comment = fg.readlines()
-        grade_match = re.match('Total Score: (\d+)', grade_comment[0])
+        grade_match = re.match('Total Score: (\d+\.*\d*)', grade_comment[0])
         if not grade_match:
             print('Error grading {}, no total score assigned'.format(os.getcwd()))
             sys.exit(1)
