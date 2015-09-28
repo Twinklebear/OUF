@@ -113,7 +113,7 @@ def check_grading(grade_file):
 def build_final_score(student_files, score_scale):
     grade_files = [f for f in student_files if f.endswith("_grade.txt")]
     if len(grade_files) == 0:
-        print('Error! Can\'t compute final grade for an graded student {}!'
+        print('Error! Can\'t compute final grade for an ungraded student {}!'
                 .format(os.getcwd()))
         #sys.exit(1)
         return
