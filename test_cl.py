@@ -86,7 +86,7 @@ def count_warnings_errors(input_file, output_file):
         f.write('Errors: ' + str(len(errors)) + '\n')
         f.write(''.join(errors))
 
-match_score = re.compile("Grade: (\d+)")
+match_score = re.compile("Grade: (\d+\.*\d*)")
 # Open files for final grading
 def grade(file, stdout_file, result_file, grade_file, ref_stdout_file):
     # Copy autograde summary (diff, warnings, failed case report) to the
@@ -143,7 +143,7 @@ def build_final_score(student_files, score_scale):
 def upload_grade(canvas):
     with open('AUTOGRADE.json', 'r') as f, open('final_score.diff', 'r') as fg:
         grade_comment = fg.readlines()
-        grade_match = re.match('Total Score: (\d+)', grade_comment[0])
+        grade_match = re.match('Total Score: (\d+\.*\d*)', grade_comment[0])
         if not grade_match:
             print('Error grading {}, no total score assigned'.format(os.getcwd()))
             sys.exit(1)
