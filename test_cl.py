@@ -127,7 +127,7 @@ def build_final_score(student_files, score_scale):
             # Find the grade for this assignment and add it to the total
             assignment_score = match_score.match(lines[-1])
             if assignment_score:
-                grade_total += int(assignment_score.group(1)) * score_scales[f]
+                grade_total += float(assignment_score.group(1)) * score_scales[f]
             grade_info += lines
             grade_info.append('################################\n\n')
 
@@ -147,7 +147,7 @@ def upload_grade(canvas):
         if not grade_match:
             print('Error grading {}, no total score assigned'.format(os.getcwd()))
             sys.exit(1)
-        grade_total = int(grade_match.group(1))
+        grade_total = float(grade_match.group(1))
         student = json.load(f)
         canvas.gradeAndCommentSubmission(None, student['canvasSubmission']['assignment_id'],
             student['canvasStudent']['id'], grade_total, grade_comment)
@@ -166,7 +166,7 @@ def compute_total_score(student_files, score_scale):
             # Find the grade for this assignment and add it to the total
             assignment_score = match_score.match(lines[-1])
             if assignment_score:
-                grade_total += int(assignment_score.group(1)) * score_scales[f]
+                grade_total += float(assignment_score.group(1)) * score_scales[f]
     return grade_total
 
 print('Grading ' + sys.argv[1])
