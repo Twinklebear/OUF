@@ -149,8 +149,8 @@ def upload_grade(canvas):
             sys.exit(1)
         grade_total = float(grade_match.group(1))
         student = json.load(f)
-        canvas.gradeAndCommentSubmission(None, student['canvasSubmission']['assignment_id'],
-            student['canvasStudent']['id'], grade_total, grade_comment)
+        canvas.gradeAndCommentSubmissionFile(None, student['canvasSubmission']['assignment_id'],
+            student['canvasStudent']['id'], grade_total, 'final_score.diff')
 
 # Compute the student's total score from their grade files
 def compute_total_score(student_files, score_scale):
