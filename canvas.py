@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 # Author: Scott Kuhl
 import json
+import os
 import urllib.request
 import urllib.parse
 import textwrap
 import sys,shutil,os,time,hashlib,re
 from pprint import pprint
 import argparse
-
+import requests
 
 # To use this Python class, you should create a file named
 # .canvas-token in your home directory. It should contain the lines:
@@ -59,9 +60,9 @@ class canvas():
             else:
                 urlString = url
         
-            print("Requesting: " +urlString)
+            print("Getting: " +urlString)
             request = urllib.request.Request(urlString)
-            request.add_header("Authorization", "Bearer " + self.CANVAS_TOKEN);
+            request.add_header("Authorization", "Bearer " + self.CANVAS_TOKEN)
             response = urllib.request.urlopen(request)
             json_string = response.read().decode('utf-8');
             retVal = json.loads(json_string)
@@ -100,7 +101,7 @@ class canvas():
         
             print("Putting: " +urlString)
             request = urllib.request.Request(urlString, method='PUT')
-            request.add_header("Authorization", "Bearer " + self.CANVAS_TOKEN);
+            request.add_header("Authorization", "Bearer " + self.CANVAS_TOKEN)
             response = urllib.request.urlopen(request)
             #print(response.readall().decode('utf-8'))
             # json_string = response.readall().decode('utf-8');
@@ -109,6 +110,37 @@ class canvas():
                 return True
             else:
                 return False
+        except:
+            e = sys.exc_info()[0]
+            print(e)
+            raise
+
+    def makePost(self, url, params):
+        """Post data to Canvas, returns the response"""
+        try:
+            # Tack on http://.../ to the beginning of the url if needed
+            if self.CANVAS_API not in url:
+                urlString = self.CANVAS_API+url
+            else:
+                urlString = url
+        
+            print("Posting: " + urlString)
+            data = urllib.parse.urlencode(params).encode("utf-8")
+            request = urllib.request.Request(urlString, data)
+            request.add_header("Authorization", "Bearer " + self.CANVAS_TOKEN)
+            response = urllib.request.urlopen(request)
+            json_string = response.read().decode('utf-8')
+            return json.loads(json_string)
+        except:
+            e = sys.exc_info()[0]
+            print(e)
+            raise
+
+    def postFile(self, url, params, commentFile):
+        """Post file to an external service, like the external Canvas file host"""
+        try:
+            print("Posting: " + url)
+            request = requests.post(url, data=params, files={"file": commentFile})
         except:
             e = sys.exc_info()[0]
             print(e)
@@ -134,8 +166,8 @@ class canvas():
         students = self.makeRequest("courses/"+str(courseId)+"/students?"+
                                      urllib.parse.urlencode({"per_page":"100",
                                                              "page": "1"}))
-	    # Filter out students who are still "pending".
-	    # These "pending" students do not have a id, which some of this code relies on
+        # Filter out students who are still "pending".
+        # These "pending" students do not have a id, which some of this code relies on
         nonPendingStudents = []
         for s in students:
             if 'id' in s:
@@ -150,6 +182,42 @@ class canvas():
                                                                   "page": "1"}))
         return allAssignments
 
+    def uploadSubmissionCommentFile(self, courseId, assignmentId, studentId, commentFile):
+        courseId = courseId or self.courseId
+        if courseId == None:
+            print("Can't comment on submissions without a courseId.")
+            exit(1)
+        if assignmentId == None or studentId == None:
+            printf("Can't comment on a submission without a assignment ID and a student ID.")
+            exit(1)
+
+        fileSize = os.path.getsize(commentFile)
+        params = { "name": commentFile,
+                "size": fileSize,
+                "content_type": "text/plain",
+                "parent_folder_path": "homework_comments" }
+
+        # See Canvas API Doc on file uploading to find out why this is such a mess
+        # File Uploads: https://canvas.instructure.com/doc/api/file.file_uploads.html
+        # Submission Comment Files: https://canvas.instructure.com/doc/api/submission_comments.html
+        # Step 1: Tell Canvas we're going to upload a file and have it tell us where to actually upload it
+        response = self.makePost("courses/" + str(courseId) + "/assignments/" + str(assignmentId) +
+                "/submissions/" + str(studentId) + "/comments/files", params)
+        # Step 2: Using the information from step 1 about where to send the file and auth info to do so,
+        # actually upload the file
+        with open(commentFile, 'rb') as f:
+            self.postFile(response["upload_url"], response["upload_params"], f)
+            # If we uploaded successfully this will tell us the actual file ID we can reference when making the
+            # comment on the student's submission
+            success = self.makePost(response["upload_params"]["success_action_redirect"], {"Content-Length": 0})
+
+        # Now comment on the student's submission to attach the file
+        self.makePut("courses/" + str(courseId) +
+                "/assignments/" + str(assignmentId) +
+                "/submissions/" + str(studentId) + "?" +
+                urllib.parse.urlencode({"comment[file_ids][]" : success["id"]}))
+
+
     def commentOnSubmission(self, courseId, assignmentId, studentId, comment):
         courseId = courseId or self.courseId
         if courseId == None:
@@ -159,7 +227,6 @@ class canvas():
             printf("Can't comment on a submission without a assignment ID and a student ID.")
             exit(1)
 
-        
         self.makePut("courses/"+str(courseId)+
                      "/assignments/"+str(assignmentId)+
                      "/submissions/"+str(studentId)+"?"+
