@@ -658,18 +658,15 @@ class canvas():
             onlydirs = [ f for f in os.listdir(destDir) if os.path.isdir(os.path.join(destDir,f)) ]
             print(destDir + ": Contains %d file(s) and %d dir(s)"%(len(onlyfiles), len(onlydirs)))
             # If submission included all files in a subdirectory, remove the subdirectory
-            if len(onlyfiles) == 0 and len(onlydirs) == 1:
-                print(destDir + ": Removing unnecessary subdirectory.")
-                # Delete previous temporary directory if it exists
-                shutil.rmtree("/tmp/autograder-tmp-dir", ignore_errors=True)
-                # Move subfolder into temporary directory
-                tmpDir = "/tmp/autograder-tmp-dir/"+onlydirs[0]
-                shutil.move(destDir+"/"+onlydirs[0], tmpDir)
-                # Move the files files in the temporary directory into the destination directory
-                for f in os.listdir(tmpDir):
-                    shutil.move(tmpDir+"/"+f, destDir)
-                # Remove temporary directory
-                shutil.rmtree("/tmp/autograder-tmp-dir", ignore_errors=True)
+            if len(onlyfiles) == 0 and len(onlydirs) > 0:
+                for subdir in onlydirs:
+                    print(destDir + ": Removing unnecessary subdirectory " + subdir)
+                    # Move the files in the subdirectory into the destination directory
+                    for f in next(os.walk(destDir + "/" + subdir))[2]:
+                        print(destDir + ": Moving up '" + f + "'")
+                        shutil.move(destDir + "/" + subdir + "/" + f, destDir)
+                    # Remove the directory
+                    shutil.rmtree(destDir + "/" + subdir, ignore_errors=True)
 
             # Remove original metadata file, write one out in the
             # subdirectory.
