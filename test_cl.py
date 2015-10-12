@@ -25,6 +25,7 @@ if sys.argv[2] == 'grade' or sys.argv[2] == 'regrade':
         print('Please install either vim or notepad++')
         sys.exit()
 
+match_case_number = re.compile("[ -]{1}Case (\d+):")
 # compare the output of a student's program to the reference output, writing the results into a
 # given result file. we also need the name of the reference .cpp file, since this will tell us
 # whether the student has named their file correctly
@@ -33,7 +34,6 @@ def compare(reference_output, student_output, result_file, reference_cpp_file):
     case_failed_count = 0
     case_number = 0
     case_failed = False
-    match_case_number = re.compile("-?Case (\d+):")
 
     if os.path.isfile(reference_output):
         with open(reference_output, 'r', encoding='utf8') as ref_out, \
@@ -45,9 +45,11 @@ def compare(reference_output, student_output, result_file, reference_cpp_file):
                     if case_match:
                         case_number = int(case_match.group(1))
                         case_failed = False
-                    if not case_failed and ((line.startswith('-') and not line.startswith('---')) or (line.startswith('+') and not line.startswith('+++'))):
-                        case_failed_count += 1
-                        case_failed = True
+                    if not case_failed and ((line.startswith('-') and \
+                       not line.startswith('---')) or (line.startswith('+') and \
+                       not line.startswith('+++'))):
+                           case_failed_count += 1
+                           case_failed = True
                     diff += line
     elif not os.path.getsize(student_output): # student program produces no outputs (NOTE: this output
                                               # file is there even if the student program didn't run,
