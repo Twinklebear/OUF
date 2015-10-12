@@ -265,8 +265,6 @@ for dir in next(os.walk(homework_dir))[1]:
                 count_warnings_errors(cl_stdout_file, result_file)
             # Open the student programs and outputs for final grading
             elif (sys.argv[2] == 'grade' and not check_grading(grade_file)) or sys.argv[2] == 'regrade':
-                if sys.argv[2] == 'regrade':
-                    os.remove(grade_file)
                 grade(file, stdout_file, result_file, grade_file, ref_stdout_file)
                 # Check that a final grade for the assignment has been entered in the grade file
                 if not check_grading(grade_file):
