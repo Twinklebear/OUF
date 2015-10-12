@@ -351,9 +351,9 @@ class canvas():
         return None
 
     def isSubmissionLate(self, submission):
-        if submission['late']:
-            return True
-        else:
+        #if submission['late']:
+        #    return True
+        #else:
             return False
 
     def isSubmissionNewest(self, submission, submission_history):
@@ -363,14 +363,15 @@ class canvas():
         return True
 
     def isSubmissionNewestNonLate(self, submission, submission_history):
-        if submission['late']:
-            return False
+        #if submission['late']:
+        #    return False
+        return True
 
         # Look for a non-late submission in the history with a greater
         # attempt number.
         for s in submission_history:
-            if s['late']:
-                continue
+            #if s['late']:
+            #    continue
             if s['attempt'] > submission['attempt']:
                 return False
         return True
