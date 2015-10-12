@@ -1,0 +1,16 @@
+Case 0:
+1542
+Case 1:
+-9852
+Case 2:
+Parsing failed
+Case 3:
+92
+Case 4:
+10
+Case 5:
+Parsing failed
+Case 6:
+-783
+Case 7:
+Parsing failed
