@@ -65,11 +65,13 @@ def compare(reference_output, student_output, result_file, reference_cpp_file):
 
 match_warning = re.compile('.* warning C\d+:')
 match_error = re.compile('.* error C\d+:')
+match_runtime_error = re.compile('^Process Status:.*')
 # count the number of compiler warnings and errors in the input file, and write the results to the
 # output file
 def count_warnings_errors(input_file, output_file):
     warnings = []
     errors = []
+    runtime_error_msg = "Process ran successfully"
     with open(input_file, 'r') as f:
         content = f.readlines()
         for line in content:
@@ -79,12 +81,16 @@ def count_warnings_errors(input_file, output_file):
             error = match_error.match(line)
             if error:
                 errors.append(line)
+            runtime_error = match_runtime_error.match(line)
+            if runtime_error:
+                runtime_error_msg = line
     with open(output_file, 'a') as f:
         f.write('\n')
         f.write('Warnings: ' + str(len(warnings)) + '\n')
         f.write(''.join(warnings) + '\n')
         f.write('Errors: ' + str(len(errors)) + '\n')
         f.write(''.join(errors))
+        f.write('\nRuntime Results:\n' + runtime_error_msg + '\n')
 
 match_score = re.compile("Grade: (\d+\.*\d*)")
 # Open files for final grading
@@ -235,9 +241,15 @@ for dir in next(os.walk(homework_dir))[1]:
                         try:
                             prog = subprocess.Popen([exe], stdin=stdin_, stdout=stdout_, universal_newlines=True)
                             prog.wait(5)
+                            if prog.returncode != 0:
+                                with open(cl_stdout_file, "a") as f:
+                                    f.write("\nProcess Status: terminated in error, return code: {}\n"
+                                            .format(prog.returncode))
                         except subprocess.TimeoutExpired:
                             print('Time out')
                             prog.kill()
+                            with open(cl_stdout_file, "a") as f:
+                                f.write("\nProcess Status: Timed Out\n")
                         except:
                             print('Exception!')
                 else: # run without input
@@ -245,9 +257,15 @@ for dir in next(os.walk(homework_dir))[1]:
                         try:
                             prog = subprocess.Popen([exe], stdout=stdout_, universal_newlines=True)
                             prog.wait(5)
+                            if prog.returncode != 0:
+                                with open(cl_stdout_file, "a") as f:
+                                    f.write("\nProcess Status: terminated in error, return code: {}\n"
+                                            .format(prog.returncode))
                         except subprocess.TimeoutExpired:
                             print('Time out')
                             prog.kill()
+                            with open(cl_stdout_file, "a") as f:
+                                f.write("\nProcess Status: Timed Out\n")
                         except:
                             print('Exception!')
             # Diff student outputs with the expected solution
