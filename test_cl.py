@@ -25,7 +25,7 @@ if sys.argv[2] == 'grade' or sys.argv[2] == 'regrade':
         print('Please install either vim or notepad++')
         sys.exit()
 
-match_case_number = re.compile("[ -]{1}Case (\d+):")
+match_case_number = re.compile("[ -]Case (\d+):")
 # compare the output of a student's program to the reference output, writing the results into a
 # given result file. we also need the name of the reference .cpp file, since this will tell us
 # whether the student has named their file correctly
