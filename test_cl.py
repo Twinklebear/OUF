@@ -36,7 +36,8 @@ def compare(reference_output, student_output, result_file, reference_cpp_file):
     match_case_number = re.compile("-?Case (\d+):")
 
     if os.path.isfile(reference_output):
-        with open(reference_output, 'r') as ref_out, open(student_output, 'r') as student_out:
+        with open(reference_output, 'r', encoding='utf8') as ref_out, \
+            open(student_output, 'r', encoding='utf8', errors='replace') as student_out:
                 reference = [l.strip() + "\n" for l in ref_out.readlines() if l.strip()]
                 student = [l.strip() + "\n" for l in student_out.readlines() if l.strip()]
                 for line in difflib.unified_diff(reference, student, fromfile='reference', tofile='student'):
@@ -58,7 +59,7 @@ def compare(reference_output, student_output, result_file, reference_cpp_file):
                                                # program, so we need to check manually
         case_failed_count = 0
 
-    with open(result_file, 'w') as result_out:
+    with open(result_file, 'w', encoding='utf8', errors='replace') as result_out:
         result_out.write(diff)
         result_out.write('\nCases Failed: ' + str(case_failed_count) + '\n')
         result_out.write('Total Cases: ' + str(case_number + 1) + '\n')
@@ -108,7 +109,7 @@ def grade(file, stdout_file, result_file, grade_file, ref_stdout_file):
 def check_grading(grade_file):
     if not os.path.isfile(grade_file):
         return False
-    grade_content = open(grade_file, 'r').readlines()
+    grade_content = open(grade_file, 'r', encoding='utf8', errors='replace').readlines()
     return not (match_score.match(grade_content[-1]) is None)
 
 def build_final_score(student_files, score_scale):
@@ -122,7 +123,7 @@ def build_final_score(student_files, score_scale):
     grade_info = ['Total Score']
     grade_total = 0
     for f in grade_files:
-        with open(f, 'r') as fg:
+        with open(f, 'r', encoding='utf8', errors='replace') as fg:
             grade_info.append('####### ' + f + ' ########\n')
             lines = fg.readlines()
             # Find the grade for this assignment and add it to the total
@@ -134,7 +135,7 @@ def build_final_score(student_files, score_scale):
 
     grade_info[0] = 'Total Score: ' + str(grade_total) + '\n\n'
     grade_comment = ''.join(grade_info)
-    with open('final_score.diff', 'w') as f:
+    with open('final_score.diff', 'w', encoding='utf8', errors='replace') as f:
         f.write(grade_comment)
     subprocess.call([editor, 'final_score.diff'])
 
@@ -142,16 +143,17 @@ def build_final_score(student_files, score_scale):
 # compute the overall score. Then submit the grade for the assignment
 # and post the compile grade files as a comment on it
 def upload_grade(canvas):
-    with open('AUTOGRADE.json', 'r') as f, open('final_score.diff', 'r') as fg:
-        grade_comment = fg.readlines()
-        grade_match = re.match('Total Score: (\d+\.*\d*)', grade_comment[0])
-        if not grade_match:
-            print('Error grading {}, no total score assigned'.format(os.getcwd()))
-            sys.exit(1)
-        grade_total = float(grade_match.group(1))
-        student = json.load(f)
-        canvas.gradeAndCommentSubmissionFile(None, student['canvasSubmission']['assignment_id'],
-            student['canvasStudent']['id'], grade_total, 'final_score.diff')
+    with open('AUTOGRADE.json', 'r') as f, \
+        open('final_score.diff', 'r', encoding='utf8', errors='replace') as fg:
+            grade_comment = fg.readlines()
+            grade_match = re.match('Total Score: (\d+\.*\d*)', grade_comment[0])
+            if not grade_match:
+                print('Error grading {}, no total score assigned'.format(os.getcwd()))
+                sys.exit(1)
+            grade_total = float(grade_match.group(1))
+            student = json.load(f)
+            canvas.gradeAndCommentSubmissionFile(None, student['canvasSubmission']['assignment_id'],
+                student['canvasStudent']['id'], grade_total, 'final_score.diff')
 
 # Compute the student's total score from their grade files
 def compute_total_score(student_files, score_scale):
@@ -162,7 +164,7 @@ def compute_total_score(student_files, score_scale):
 
     grade_total = 0
     for f in grade_files:
-        with open(f, 'r') as fg:
+        with open(f, 'r', encoding='utf8', errors='replace') as fg:
             lines = fg.readlines()
             # Find the grade for this assignment and add it to the total
             assignment_score = match_score.match(lines[-1])
