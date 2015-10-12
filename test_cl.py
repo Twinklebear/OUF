@@ -33,7 +33,7 @@ def compare(reference_output, student_output, result_file, reference_cpp_file):
     case_failed_count = 0
     case_number = 0
     case_failed = False
-    match_case_number = re.compile(" Case (\d+):")
+    match_case_number = re.compile("-?Case (\d+):")
 
     if os.path.isfile(reference_output):
         with open(reference_output, 'r') as ref_out, open(student_output, 'r') as student_out:
