@@ -44,7 +44,7 @@ def compare(reference_output, student_output, result_file, reference_cpp_file):
                     if case_match:
                         case_number = int(case_match.group(1))
                         case_failed = False
-                    if not case_failed and line.startswith('-') and not line.startswith('---'):
+                    if not case_failed and ((line.startswith('-') and not line.startswith('---')) or (line.startswith('+') and not line.startswith('+++'))):
                         case_failed_count += 1
                         case_failed = True
                     diff += line
@@ -161,7 +161,7 @@ def compute_total_score(student_files, score_scale):
             # Find the grade for this assignment and add it to the total
             assignment_score = match_score.match(lines[-1])
             if assignment_score:
-                grade_total += float(assignment_score.group(1)) * score_scales[f]
+                grade_total = grade_total + float(assignment_score.group(1)) * score_scales[f]
     return grade_total
 
 print('Grading ' + sys.argv[1])
