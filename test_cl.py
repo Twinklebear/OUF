@@ -204,6 +204,8 @@ for dir in next(os.walk(homework_dir))[1]:
     for file in files:
         base, ext = os.path.splitext(file)
         if ext == '.cpp' or ext == '.cc':
+            if len(sys.argv) > 3 and base != sys.argv[3]: # if a file name is provided, skip other files
+                continue
             # Skip incorrectly named files
             if not (file in ref_file_names):
                 print('Skipping incorrectly named encountered: ' + file)

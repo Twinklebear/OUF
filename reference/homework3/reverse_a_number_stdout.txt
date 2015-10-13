@@ -15,7 +15,7 @@ Case 6:
 Case 7:
 5
 Case 8:
-0
+Invalid input
 Case 9:
 808
 Case 10:
