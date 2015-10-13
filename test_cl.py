@@ -100,8 +100,18 @@ match_score = re.compile("Grade: (\d+\.*\d*)")
 def grade(file, stdout_file, result_file, grade_file, ref_stdout_file):
     # Copy autograde summary (diff, warnings, failed case report) to the
     # final grade file
-    if not check_grading(grade_file) and os.path.isfile(result_file):
+    if os.path.isfile(result_file):
+        grade_contents = ""
+        start_copy = False
+        with open(grade_file, "r") as in_file:
+            for line in in_file:
+                if start_copy:
+                    grade_contents = grade_contents + line
+                if line.startswith("Errors:"):
+                    start_copy = True
         shutil.copyfile(result_file, grade_file)
+        with open(grade_file, "a") as out_file:
+            out_file.write(grade_contents)
     if os.path.isfile(ref_stdout_file):
         subprocess.call([editor, file, stdout_file, ref_stdout_file, grade_file])
     else:
