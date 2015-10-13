@@ -103,12 +103,13 @@ def grade(file, stdout_file, result_file, grade_file, ref_stdout_file):
     if os.path.isfile(result_file):
         grade_contents = ""
         start_copy = False
-        with open(grade_file, "r") as in_file:
-            for line in in_file:
-                if start_copy:
-                    grade_contents = grade_contents + line
-                if line.startswith("Errors:"):
-                    start_copy = True
+        if check_grading(grade_file):
+            with open(grade_file, "r") as in_file:
+                for line in in_file:
+                    if start_copy:
+                        grade_contents = grade_contents + line
+                    if line.startswith("Errors:"):
+                        start_copy = True
         shutil.copyfile(result_file, grade_file)
         with open(grade_file, "a") as out_file:
             out_file.write(grade_contents)
