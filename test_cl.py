@@ -161,8 +161,8 @@ def upload_grade(canvas):
 def compute_total_score(student_files, score_scale):
     grade_files = [f for f in student_files if f.endswith("_grade.txt")]
     if len(grade_files) == 0:
-        print('Error! Can\'t get grade stats for an ungraded student!')
-        sys.exit(1)
+        print('Error! Can\'t get grade stats for an ungraded student! Giving a 0 for now')
+        return 0
 
     grade_total = 0
     for f in grade_files:
