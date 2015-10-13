@@ -25,6 +25,7 @@ if sys.argv[2] == 'grade' or sys.argv[2] == 'regrade':
         print('Please install either vim or notepad++')
         sys.exit()
 
+match_case_number = re.compile("[ -]Case (\d+):")
 # compare the output of a student's program to the reference output, writing the results into a
 # given result file. we also need the name of the reference .cpp file, since this will tell us
 # whether the student has named their file correctly
@@ -33,10 +34,10 @@ def compare(reference_output, student_output, result_file, reference_cpp_file):
     case_failed_count = 0
     case_number = 0
     case_failed = False
-    match_case_number = re.compile("-?Case (\d+):")
 
     if os.path.isfile(reference_output):
-        with open(reference_output, 'r') as ref_out, open(student_output, 'r') as student_out:
+        with open(reference_output, 'r', encoding='utf8') as ref_out, \
+            open(student_output, 'r', encoding='utf8', errors='replace') as student_out:
                 reference = [l.strip() + "\n" for l in ref_out.readlines() if l.strip()]
                 student = [l.strip() + "\n" for l in student_out.readlines() if l.strip()]
                 for line in difflib.unified_diff(reference, student, fromfile='reference', tofile='student'):
@@ -44,9 +45,11 @@ def compare(reference_output, student_output, result_file, reference_cpp_file):
                     if case_match:
                         case_number = int(case_match.group(1))
                         case_failed = False
-                    if not case_failed and ((line.startswith('-') and not line.startswith('---')) or (line.startswith('+') and not line.startswith('+++'))):
-                        case_failed_count += 1
-                        case_failed = True
+                    if not case_failed and ((line.startswith('-') and \
+                       not line.startswith('---')) or (line.startswith('+') and \
+                       not line.startswith('+++'))):
+                           case_failed_count += 1
+                           case_failed = True
                     diff += line
     elif not os.path.getsize(student_output): # student program produces no outputs (NOTE: this output
                                               # file is there even if the student program didn't run,
@@ -58,18 +61,20 @@ def compare(reference_output, student_output, result_file, reference_cpp_file):
                                                # program, so we need to check manually
         case_failed_count = 0
 
-    with open(result_file, 'w') as result_out:
+    with open(result_file, 'w', encoding='utf8', errors='replace') as result_out:
         result_out.write(diff)
         result_out.write('\nCases Failed: ' + str(case_failed_count) + '\n')
         result_out.write('Total Cases: ' + str(case_number + 1) + '\n')
 
 match_warning = re.compile('.* warning C\d+:')
 match_error = re.compile('.* error C\d+:')
+match_runtime_error = re.compile('^Process Status:.*')
 # count the number of compiler warnings and errors in the input file, and write the results to the
 # output file
 def count_warnings_errors(input_file, output_file):
     warnings = []
     errors = []
+    runtime_error_msg = "Process ran successfully"
     with open(input_file, 'r') as f:
         content = f.readlines()
         for line in content:
@@ -79,12 +84,16 @@ def count_warnings_errors(input_file, output_file):
             error = match_error.match(line)
             if error:
                 errors.append(line)
+            runtime_error = match_runtime_error.match(line)
+            if runtime_error:
+                runtime_error_msg = line
     with open(output_file, 'a') as f:
         f.write('\n')
         f.write('Warnings: ' + str(len(warnings)) + '\n')
         f.write(''.join(warnings) + '\n')
         f.write('Errors: ' + str(len(errors)) + '\n')
         f.write(''.join(errors))
+        f.write('\nRuntime Results:\n' + runtime_error_msg + '\n')
 
 match_score = re.compile("Grade: (\d+\.*\d*)")
 # Open files for final grading
@@ -102,7 +111,7 @@ def grade(file, stdout_file, result_file, grade_file, ref_stdout_file):
 def check_grading(grade_file):
     if not os.path.isfile(grade_file):
         return False
-    grade_content = open(grade_file, 'r').readlines()
+    grade_content = open(grade_file, 'r', encoding='utf8', errors='replace').readlines()
     return not (match_score.match(grade_content[-1]) is None)
 
 def build_final_score(student_files, score_scale):
@@ -116,7 +125,7 @@ def build_final_score(student_files, score_scale):
     grade_info = ['Total Score']
     grade_total = 0
     for f in grade_files:
-        with open(f, 'r') as fg:
+        with open(f, 'r', encoding='utf8', errors='replace') as fg:
             grade_info.append('####### ' + f + ' ########\n')
             lines = fg.readlines()
             # Find the grade for this assignment and add it to the total
@@ -128,7 +137,7 @@ def build_final_score(student_files, score_scale):
 
     grade_info[0] = 'Total Score: ' + str(grade_total) + '\n\n'
     grade_comment = ''.join(grade_info)
-    with open('final_score.diff', 'w') as f:
+    with open('final_score.diff', 'w', encoding='utf8', errors='replace') as f:
         f.write(grade_comment)
     subprocess.call([editor, 'final_score.diff'])
 
@@ -136,27 +145,28 @@ def build_final_score(student_files, score_scale):
 # compute the overall score. Then submit the grade for the assignment
 # and post the compile grade files as a comment on it
 def upload_grade(canvas):
-    with open('AUTOGRADE.json', 'r') as f, open('final_score.diff', 'r') as fg:
-        grade_comment = fg.readlines()
-        grade_match = re.match('Total Score: (\d+\.*\d*)', grade_comment[0])
-        if not grade_match:
-            print('Error grading {}, no total score assigned'.format(os.getcwd()))
-            sys.exit(1)
-        grade_total = float(grade_match.group(1))
-        student = json.load(f)
-        canvas.gradeAndCommentSubmissionFile(None, student['canvasSubmission']['assignment_id'],
-            student['canvasStudent']['id'], grade_total, 'final_score.diff')
+    with open('AUTOGRADE.json', 'r') as f, \
+        open('final_score.diff', 'r', encoding='utf8', errors='replace') as fg:
+            grade_comment = fg.readlines()
+            grade_match = re.match('Total Score: (\d+\.*\d*)', grade_comment[0])
+            if not grade_match:
+                print('Error grading {}, no total score assigned'.format(os.getcwd()))
+                sys.exit(1)
+            grade_total = float(grade_match.group(1))
+            student = json.load(f)
+            canvas.gradeAndCommentSubmissionFile(None, student['canvasSubmission']['assignment_id'],
+                student['canvasStudent']['id'], grade_total, 'final_score.diff')
 
 # Compute the student's total score from their grade files
 def compute_total_score(student_files, score_scale):
     grade_files = [f for f in student_files if f.endswith("_grade.txt")]
     if len(grade_files) == 0:
-        print('Error! Can\'t get grade stats for an ungraded student!')
-        sys.exit(1)
+        print('Error! Can\'t get grade stats for an ungraded student! Giving a 0 for now')
+        return 0
 
     grade_total = 0
     for f in grade_files:
-        with open(f, 'r') as fg:
+        with open(f, 'r', encoding='utf8', errors='replace') as fg:
             lines = fg.readlines()
             # Find the grade for this assignment and add it to the total
             assignment_score = match_score.match(lines[-1])
@@ -237,9 +247,15 @@ for dir in next(os.walk(homework_dir))[1]:
                         try:
                             prog = subprocess.Popen([exe], stdin=stdin_, stdout=stdout_, universal_newlines=True)
                             prog.wait(5)
+                            if prog.returncode != 0:
+                                with open(cl_stdout_file, "a") as f:
+                                    f.write("\nProcess Status: terminated in error, return code: {}\n"
+                                            .format(prog.returncode))
                         except subprocess.TimeoutExpired:
                             print('Time out')
                             prog.kill()
+                            with open(cl_stdout_file, "a") as f:
+                                f.write("\nProcess Status: Timed Out\n")
                         except:
                             print('Exception!')
                 else: # run without input
@@ -247,9 +263,15 @@ for dir in next(os.walk(homework_dir))[1]:
                         try:
                             prog = subprocess.Popen([exe], stdout=stdout_, universal_newlines=True)
                             prog.wait(5)
+                            if prog.returncode != 0:
+                                with open(cl_stdout_file, "a") as f:
+                                    f.write("\nProcess Status: terminated in error, return code: {}\n"
+                                            .format(prog.returncode))
                         except subprocess.TimeoutExpired:
                             print('Time out')
                             prog.kill()
+                            with open(cl_stdout_file, "a") as f:
+                                f.write("\nProcess Status: Timed Out\n")
                         except:
                             print('Exception!')
             # Diff student outputs with the expected solution
