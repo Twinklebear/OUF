@@ -14,3 +14,9 @@ Case 6:
 -783
 Case 7:
 Parsing failed
+Case 8:
+0
+Case 9:
+2147483647
+Case 10:
+-2147483648
