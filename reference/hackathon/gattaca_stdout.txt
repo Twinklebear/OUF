@@ -16,3 +16,17 @@ Case 7:
 None
 Case 8:
 None
+Case 9:
+0 3 6 
+Case 10:
+None
+Case 11:
+0 2 4 6 8 10 
+Case 12:
+0 2 4 6 8 
+Case 13:
+0 2 4 6 
+Case 14:
+0 11 
+Case 15:
+0 11 
