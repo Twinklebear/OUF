@@ -4,27 +4,36 @@ import re
 import shutil
 import json
 import subprocess
+import datetime
 import canvas
 import autograder
 import grading
 from time import sleep
 
+# Check that cl.exe is accessible
+try:
+    subprocess.Popen(['cl.exe'], universal_newlines=True).wait()
+except:
+    print("Fatal Error! cl.exe is not available, did you setup your environment?")
+    sys.exit(1)
+
 # Configure the server for the assignment we're checking
 config = autograder.config()
 settings = config.get()
-homework_dir = settings['subdirName']
+homework_dir_name = settings['subdirName']
+homework_path = os.path.abspath(homework_dir_name)
 course_name = settings['courseName']
 assignment_name = settings['assignmentName']
 
 # Collect list of all program files we're expecting to find
-ref_homework_dir = os.path.abspath('../reference/' + homework_dir)
+ref_homework_path = os.path.abspath('../reference/' + homework_dir_name)
 ref_file_names = []
 score_scales = {}
-for f in next(os.walk(ref_homework_dir))[2]:
+for f in next(os.walk(ref_homework_path))[2]:
     base, ext = os.path.splitext(f)
     if not base.endswith('_check') and (ext == '.cpp' or ext == '.cc'):
         ref_file_names.append(f)
-        with open(ref_homework_dir + '/' + f, 'r') as scale:
+        with open(ref_homework_path + '/' + f, 'r') as scale:
             score_scales[base + '_grade.txt'] = int(scale.readlines()[0]) / 10.0
 
 c = canvas.canvas()
@@ -35,10 +44,10 @@ c = canvas.canvas(courseId=course_id)
 while True:
     print("Checking for new submissions")
     students = c.downloadAssignment(courseName=course_name, assignmentName=assignment_name,
-            subdirName=homework_dir)
+            subdirName=homework_path)
     print("Downloaded new submissions from {}".format(students))
     for student_id in students:
-        student_dir = os.path.abspath(homework_dir + '/' + str(student_id))
+        student_dir = os.path.abspath(homework_path + "/" + str(student_id))
         print('Processing student ' + student_dir)
         os.chdir(student_dir)
         files = [f for f in next(os.walk(student_dir))[2]]
@@ -54,13 +63,13 @@ while True:
                     continue
 
                 cl_stdout_file = base + '_cl.txt'
-                stdin_file = ref_homework_dir + '/' + base + '_stdin.txt'
+                stdin_file = ref_homework_path + '/' + base + '_stdin.txt'
                 stdout_file = base + '_stdout.txt'
-                ref_stdout_file = ref_homework_dir + '/' + base + '_stdout.txt'
+                ref_stdout_file = ref_homework_path + '/' + base + '_stdout.txt'
                 result_file = base + '_results.txt'
                 grade_file = base + '_grade.txt'
-                check_prog = ref_homework_dir + '/' + base + '_check.exe'
-                reference_cpp_file = ref_homework_dir + '/' + file
+                check_prog = ref_homework_path + '/' + base + '_check.exe'
+                reference_cpp_file = ref_homework_path + '/' + file
 
                 # Compile the student's submission
                 print('Compiling ' + file)
@@ -128,5 +137,6 @@ while True:
         grading.upload_grade(c)
 
     # Sleep for 1 hour to poll again
+    print("Students graded for {}".format(datetime.datetime.now()))
     sleep(60 * 60)
 
