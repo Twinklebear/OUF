@@ -169,11 +169,15 @@ def compute_total_score(student_files, score_scale):
     return grade_total
 
 # Compile the student's submission and record compilation errors
+# Will abort if cl.exe is not available
 def compile(cl_stdout_file, student_cpp):
     with open(cl_stdout_file, 'w') as cl_stdout:
-        build = subprocess.Popen(['cl.exe', '/W4', '/EHsc', student_cpp], stdout=cl_stdout,
-                universal_newlines=True)
-        build.wait()
+        try:
+            subprocess.Popen(['cl.exe', '/W4', '/EHsc', student_cpp], stdout=cl_stdout,
+                    universal_newlines=True).wait()
+        except:
+            print("Fatal Error! cl.exe is not available, did you setup your environment?")
+            sys.exit(1)
 
 # Run the student's program and save the output
 def run_student(exe, stdin_file, stdout_file, cl_stdout_file):
