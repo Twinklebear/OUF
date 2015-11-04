@@ -108,16 +108,15 @@ def check_grading(grade_file):
     grade_content = open(grade_file, 'r', encoding='utf8', errors='replace').readlines()
     return not (match_score.match(grade_content[-1]) is None)
 
-def build_final_score(student_files, score_scale):
+def build_final_score(student_files, score_scale, editor):
     grade_files = [f for f in student_files if f.endswith("_grade.txt")]
     if len(grade_files) == 0:
         print('Error! Can\'t compute final grade for an ungraded student {}!'
                 .format(os.getcwd()))
-        #sys.exit(1)
         return
 
     grade_info = ['Total Score']
-    grade_total = 0
+    grade_total = -1
     for f in grade_files:
         with open(f, 'r', encoding='utf8', errors='replace') as fg:
             grade_info.append('####### ' + f + ' ########\n')
@@ -133,7 +132,8 @@ def build_final_score(student_files, score_scale):
     grade_comment = ''.join(grade_info)
     with open('final_score.diff', 'w', encoding='utf8', errors='replace') as f:
         f.write(grade_comment)
-    subprocess.call([editor, 'final_score.diff'])
+    if editor:
+        subprocess.call([editor, 'final_score.diff'])
 
 # Compile all the *_grade.txt files for a student into a single one and
 # compute the overall score. Then submit the grade for the assignment
@@ -142,10 +142,10 @@ def upload_grade(canvas):
     with open('AUTOGRADE.json', 'r') as f, \
         open('final_score.diff', 'r', encoding='utf8', errors='replace') as fg:
             grade_comment = fg.readlines()
-            grade_match = re.match('Total Score: (\d+\.*\d*)', grade_comment[0])
+            grade_match = re.match('Total Score: (-?\d+\.*\d*)', grade_comment[0])
             if not grade_match:
                 print('Error grading {}, no total score assigned'.format(os.getcwd()))
-                sys.exit(1)
+                return
             grade_total = float(grade_match.group(1))
             student = json.load(f)
             canvas.gradeAndCommentSubmissionFile(None, student['canvasSubmission']['assignment_id'],
@@ -169,7 +169,7 @@ def compute_total_score(student_files, score_scale):
     return grade_total
 
 # Compile the student's submission and record compilation errors
-def compile(cl_stdout, student_cpp):
+def compile(cl_stdout_file, student_cpp):
     with open(cl_stdout_file, 'w') as cl_stdout:
         build = subprocess.Popen(['cl.exe', '/W4', '/EHsc', student_cpp], stdout=cl_stdout,
                 universal_newlines=True)

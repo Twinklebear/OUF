@@ -113,7 +113,7 @@ for dir in next(os.walk(homework_dir))[1]:
 
     if sys.argv[2] == 'grade' or sys.argv[2] == 'regrade':
         graded_files = [f for f in next(os.walk(student_dir))[2]]
-        grading.build_final_score(graded_files, score_scales)
+        grading.build_final_score(graded_files, score_scales, editor)
 
 
 # Compute final score statistics and log them
