@@ -524,10 +524,10 @@ class canvas():
         # Determine if we should download the submission or not
         if locked:
             print("%-12s skipping download because submission is locked." % login)
-            return
+            return False
         if newAttempt <= cachedAttempt:
             print("%-12s is up to date" % login)
-            return
+            return False
 
         archiveFile  = os.path.join(directory,str(login) + exten)
 
@@ -552,15 +552,20 @@ class canvas():
         metadataNew['locked']=0
         with open(metadataFiles[0], "w") as f:
             metadata_string = json.dump(metadataNew, f, indent=4)
+        return True
         
         
 
     def downloadSubmissions(self, submissions, students, dir=None, group_memberships={}):
-        """Downloads submissions each of the students. Assumes that students submit one file (tgz.gz, zip, whatever is allowed). Files will be downloaded into the given subdirectory."""
+        """Downloads submissions each of the students. Assumes that students submit one file
+           (tgz.gz, zip, whatever is allowed). Files will be downloaded into the given subdirectory.
+           Returns the list of student IDs that submissions were downloaded for
+        """
         if not dir:
             dir = "."
         if not os.path.exists(dir):
             os.makedirs(dir)
+        students_downloaded = []
         # require one attachment
         for i in submissions:
             if i != None and 'attachments' in i and len(i['attachments']) == 1 and \
@@ -568,7 +573,9 @@ class canvas():
                i['attachments'][0]['filename']:
                 student = self.findStudent(students, i['user_id'])
                 if student:
-                    self.downloadSubmission(i, student, dir, group_memberships)
+                    if self.downloadSubmission(i, student, dir, group_memberships):
+                        students_downloaded.append(student["id"])
+        return students_downloaded
 
 
     def get_immediate_files(self, dir):
@@ -695,6 +702,9 @@ class canvas():
         self.courseId = courseId;
 
     def downloadAssignment(self, courseName, assignmentName, subdirName, userid=None, attempt=-1):
+        """Download the latest submissions for the course and return the list of IDs that
+           we downloaded submissions for
+        """
         # Find the course
         courses = self.getCourses()
         courseId = self.findCourseId(courses, courseName)
@@ -749,7 +759,7 @@ class canvas():
         submissionsToGrade = self.findSubmissionsToGrade(submissions, attempt)
 
         # Download the submissions
-        self.downloadSubmissions(submissionsToGrade, students, subdirName, group_memberships)
+        students_downloaded = self.downloadSubmissions(submissionsToGrade, students, subdirName, group_memberships)
 
         # Assuming zip, tgz, or tar.gz files are submitted, extract
         # them into subdirectories named after the student usernames.
@@ -757,6 +767,7 @@ class canvas():
             self.extractAllFiles(dir=subdirName,newSubdir=True)
         else:
             self.extractAllFiles()
+        return students_downloaded
 
 
 

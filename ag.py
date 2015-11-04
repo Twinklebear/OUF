@@ -324,12 +324,15 @@ elif sys.argv[1] == 'stats' or sys.argv[1] == 'stat':
 elif sys.argv[1] == 'download':
     c = canvas.canvas()
     if len(sys.argv) == 2:
-        c.downloadAssignment(courseName=courseName, assignmentName=assignmentName, subdirName=subdirName)
+        students = c.downloadAssignment(courseName=courseName,
+				assignmentName=assignmentName, subdirName=subdirName)
+        print("Downloaded {}".format(students))
     elif len(sys.argv) == 4:
         # Delete the any existing submission with the given name
         if os.path.exists(os.path.join(subdirName, sys.argv[2])):
             shutil.rmtree(os.path.join(subdirName, sys.argv[2]))
-        c.downloadAssignment(courseName=courseName, assignmentName=assignmentName, subdirName=subdirName, userid=sys.argv[2], attempt=int(sys.argv[3]))
+        c.downloadAssignment(courseName=courseName, assignmentName=assignmentName,
+				subdirName=subdirName, userid=sys.argv[2], attempt=int(sys.argv[3]))
     else:
         print("Usage:")
         print(" ag.py download   --> downloads all non-late submissions")
@@ -347,10 +350,3 @@ else:
     print("Unknown action: %s" % sys.argv[1])
     exit(1)
 
-
-
-
-
-
-
-    
