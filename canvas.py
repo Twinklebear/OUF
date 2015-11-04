@@ -259,11 +259,13 @@ class canvas():
             printf("Can't comment on a submission without a assignment ID and a student ID.")
             exit(1)
         
-        # Post the student's score and a comment to see the attached file
-        self.makePut("courses/" + str(courseId) +
-                     "/assignments/" + str(assignmentId) +
-                     "/submissions/" + str(studentId) + "?" +
-                     urllib.parse.urlencode({"submission[posted_grade]": str(points)}))
+        # Post the student's score if the assignment was graded. We have a negative grade
+        # when running from the grading server since it doesn't score students
+        if points >= 0:
+            self.makePut("courses/" + str(courseId) +
+                    "/assignments/" + str(assignmentId) +
+                    "/submissions/" + str(studentId) + "?" +
+                    urllib.parse.urlencode({"submission[posted_grade]": str(points)}))
         # Upload the score summary file
         self.uploadSubmissionCommentFile(courseId, assignmentId, studentId, commentFile)
 
