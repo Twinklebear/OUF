@@ -50,12 +50,14 @@ def compare(reference_output, student_output, result_file):
 
 match_warning = re.compile('.* warning C\d+:')
 match_error = re.compile('.* error C\d+:')
+match_link_error = re.compile('.* LNK\d+:')
 match_runtime_error = re.compile('^Process Status:.*')
 # count the number of compiler warnings and errors in the input file, and write the results to the
 # output file
 def count_warnings_errors(input_file, output_file):
     warnings = []
     errors = []
+    link_errors = []
     runtime_error_msg = "Process ran successfully"
     with open(input_file, 'r') as f:
         content = f.readlines()
@@ -66,6 +68,9 @@ def count_warnings_errors(input_file, output_file):
             error = match_error.match(line)
             if error:
                 errors.append(line)
+            link_error = match_link_error.match(line)
+            if link_error:
+                link_errors.append(line)
             runtime_error = match_runtime_error.match(line)
             if runtime_error:
                 runtime_error_msg = line
@@ -73,9 +78,11 @@ def count_warnings_errors(input_file, output_file):
         f.write('\n')
         f.write('Warnings: ' + str(len(warnings)) + '\n')
         f.write(''.join(warnings) + '\n')
-        f.write('Errors: ' + str(len(errors)) + '\n')
-        f.write(''.join(errors))
-        f.write('\nRuntime Results:\n' + runtime_error_msg + '\n')
+        f.write('Compilation Errors: ' + str(len(errors)) + '\n')
+        f.write(''.join(errors) + '\n')
+        f.write('Linker Errors: ' + str(len(link_errors)) + '\n')
+        f.write(''.join(link_errors) + '\n')
+        f.write('Runtime Results:\n' + runtime_error_msg + '\n')
 
 match_score = re.compile("Grade: (\d+\.*\d*)")
 # Open files for final grading
