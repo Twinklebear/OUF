@@ -30,16 +30,13 @@ print('Grading ' + sys.argv[1])
 main_dir = os.path.abspath('.')
 homework_dir = os.path.abspath('./submissions/' + sys.argv[1])
 ref_homework_dir = os.path.abspath('./reference/' + sys.argv[1])
+ref_homework = os.path.abspath('./reference/' + sys.argv[1] + '.json')
 # Collect list of all program files we're expecting to find
-ref_file_names = []
-score_scales = {}
-for f in next(os.walk(ref_homework_dir))[2]:
-    base, ext = os.path.splitext(f)
-    if not base.endswith('_check') and (ext == '.cpp' or ext == '.cc'):
-        ref_file_names.append(f)
-        with open(ref_homework_dir + '/' + f, 'r') as scale:
-            score_scales[base + '_grade.txt'] = int(scale.readlines()[0]) / 10.0
+reference_soln = None
+with open(ref_homework_dir + "/" + sys.argv[1] + ".json", "r") as ref:
+    reference_soln = json.load(ref)
 
+print(reference_soln)
 
 if sys.argv[2] == 'upload':
     c = canvas.canvas()
@@ -60,60 +57,48 @@ for dir in next(os.walk(homework_dir))[1]:
         grading.upload_grade(c)
         continue
     elif sys.argv[2] == 'stats':
-        grade_stats.append(grading.compute_total_score(files, score_scales))
+        grade_stats.append(grading.compute_total_score(files, reference_soln))
         continue
 
-    for file in files:
-        base, ext = os.path.splitext(file)
-        if ext == '.cpp' or ext == '.cc':
-            if len(sys.argv) > 3 and base != sys.argv[3]: # if a file name is provided, skip other files
-                continue
-            # Skip incorrectly named files
-            if not (file in ref_file_names):
-                print('Skipping incorrectly named encountered: ' + file)
-                continue
+    for name, problem in reference_soln.items():
+        # If a file name is provided, skip other files
+        if len(sys.argv) > 3 and name != sys.argv[3]:
+            continue
 
-            cl_stdout_file = base + '_cl.txt'
-            stdin_file = ref_homework_dir + '/' + base + '_stdin.txt'
-            stdout_file = base + '_stdout.txt'
-            ref_stdout_file = ref_homework_dir + '/' + base + '_stdout.txt'
-            result_file = base + '_results.txt'
-            grade_file = base + '_grade.txt'
-            check_prog = ref_homework_dir + '/' + base + '_check.exe'
-            reference_cpp_file = ref_homework_dir + '/' + file
-            # Compile student's programs
-            if sys.argv[2] == 'compile':
-                print('Compiling ' + file)
-                grading.compile(cl_stdout, file)
-            # Run all student programs and save output results
-            elif ((not os.path.isfile(stdout_file) or not os.path.getsize(stdout_file))\
-					and sys.argv[2] == 'run') or (sys.argv[2] == 'rerun'):
-                exe = base + '.exe'
-                print('Running ' + exe)
-                grading.run_student(exe, stdin_file, stdout_file, cl_stdout_file)
-            # Diff student outputs with the expected solution
-            elif sys.argv[2] == 'check':
-                print('Checking ' + base)
-                if (os.path.isfile(check_prog)): # use the check program
-                    print('Using ' + check_prog)
-                    with open(stdout_file, 'r') as stdout_, open(result_file, 'w') as result_:
-                        check = subprocess.Popen([check_prog], stdin=stdout_, stdout=result_,
-                            universal_newlines=True)
-                        check.wait()
-                else: # simply compare output files
-                    grading.compare(ref_stdout_file, stdout_file, result_file, reference_cpp_file)
-                # count the number of warnings and errors
-                grading.count_warnings_errors(cl_stdout_file, result_file)
-            # Open the student programs and outputs for final grading
-            elif (sys.argv[2] == 'grade' and not grading.check_grading(grade_file)) or sys.argv[2] == 'regrade':
-                grading.grade(file, stdout_file, result_file, grade_file, ref_stdout_file, editor)
-                # Check that a final grade for the assignment has been entered in the grade file
-                if not grading.check_grading(grade_file):
-                    print("Error! No grade assigned for " + file)
+        cl_stdout_file = name + '_cl.txt'
+        stdin_file = ref_homework_dir + '/' + problem["stdin"]
+        stdout_file = name + "_stdout.txt"
+        ref_stdout_file = ref_homework_dir + '/' + problem["stdout"]
+        result_file = name + '_results.txt'
+        grade_file = name + '_grade.txt'
+
+        # Compile student's programs
+        if sys.argv[2] == 'compile':
+            print('Compiling {}'.format(problem))
+            grading.compile(cl_stdout_file, problem, name)
+        # Run all student programs and save output results
+        elif ((not os.path.isfile(stdout_file) or not os.path.getsize(stdout_file))\
+                and sys.argv[2] == 'run') or (sys.argv[2] == 'rerun'):
+            exe = name + '.exe'
+            print('Running ' + exe)
+            grading.run_student(exe, stdin_file, stdout_file, cl_stdout_file)
+        # Diff student outputs with the expected solution
+        elif sys.argv[2] == 'check':
+            print('Checking ' + name)
+            # Compare the student's output to our expected output
+            grading.compare(ref_stdout_file, stdout_file, result_file)
+            # count the number of warnings and errors
+            grading.count_warnings_errors(cl_stdout_file, result_file)
+        # Open the student programs and outputs for final grading
+        elif (sys.argv[2] == 'grade' and not grading.check_grading(grade_file)) or sys.argv[2] == 'regrade':
+            grading.grade(problem, stdout_file, result_file, grade_file, ref_stdout_file, editor)
+            # Check that a final grade for the assignment has been entered in the grade file
+            if not grading.check_grading(grade_file):
+                print("Error! No grade assigned for " + name)
 
     if sys.argv[2] == 'grade' or sys.argv[2] == 'regrade':
         graded_files = [f for f in next(os.walk(student_dir))[2]]
-        grading.build_final_score(graded_files, score_scales, editor)
+        grading.build_final_score(graded_files, reference_soln, editor)
 
 
 # Compute final score statistics and log them

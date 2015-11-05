@@ -11,7 +11,7 @@ match_case_number = re.compile("[ -]Case (\d+):")
 # compare the output of a student's program to the reference output, writing the results into a
 # given result file. we also need the name of the reference .cpp file, since this will tell us
 # whether the student has named their file correctly
-def compare(reference_output, student_output, result_file, reference_cpp_file):
+def compare(reference_output, student_output, result_file):
     diff = ''
     case_failed_count = 0
     case_number = 0
@@ -33,14 +33,14 @@ def compare(reference_output, student_output, result_file, reference_cpp_file):
                            case_failed_count += 1
                            case_failed = True
                     diff += line
-    elif not os.path.getsize(student_output): # student program produces no outputs (NOTE: this output
-        # file is there even if the student program didn't run,
-                                              # so we need to check for the size)
+    # student program produces no outputs (NOTE: this output
+    # file is there even if the student program didn't run,
+    # so we need to check for the size)
+    elif not os.path.getsize(student_output):
         case_failed_count = 1
-    elif not os.path.isfile(reference_cpp_file): # student named their file wrongly
-        case_failed_count = 1
-    elif not os.path.isfile(reference_output): # this problem has no reference outputs, and no check
-        # program, so we need to check manually
+     # this problem has no reference outputs, and no check
+    # program, so we need to check manually
+    elif not os.path.isfile(reference_output):
         case_failed_count = 0
 
     with open(result_file, 'w', encoding='utf8', errors='replace') as result_out:
@@ -79,7 +79,7 @@ def count_warnings_errors(input_file, output_file):
 
 match_score = re.compile("Grade: (\d+\.*\d*)")
 # Open files for final grading
-def grade(file, stdout_file, result_file, grade_file, ref_stdout_file, editor):
+def grade(problem, stdout_file, result_file, grade_file, ref_stdout_file, editor):
     # Copy autograde summary (diff, warnings, failed case report) to the
     # final grade file
     if os.path.isfile(result_file):
@@ -96,10 +96,12 @@ def grade(file, stdout_file, result_file, grade_file, ref_stdout_file, editor):
         with open(grade_file, "a") as out_file:
             out_file.write(grade_contents)
     if editor:
+        editor_action = [editor] + problem["files"]
+        editor_action.append(stdout_file)
         if os.path.isfile(ref_stdout_file):
-            subprocess.call([editor, file, stdout_file, ref_stdout_file, grade_file])
-        else:
-            subprocess.call([editor, file, stdout_file, grade_file])
+            editor_action.append(ref_stdout_file)
+        editor_action.append(grade_file)
+        subprocess.call(editor_action)
 
 # Check that a score was correctly assigned to the problem
 def check_grading(grade_file):
@@ -108,7 +110,7 @@ def check_grading(grade_file):
     grade_content = open(grade_file, 'r', encoding='utf8', errors='replace').readlines()
     return not (match_score.match(grade_content[-1]) is None)
 
-def build_final_score(student_files, score_scale, editor):
+def build_final_score(student_files, problems, editor):
     grade_files = [f for f in student_files if f.endswith("_grade.txt")]
     if len(grade_files) == 0:
         print('Error! Can\'t compute final grade for an ungraded student {}!'
@@ -124,7 +126,7 @@ def build_final_score(student_files, score_scale, editor):
             # Find the grade for this assignment and add it to the total
             assignment_score = match_score.match(lines[-1])
             if assignment_score:
-                grade_total += float(assignment_score.group(1)) * score_scales[f]
+                grade_total += float(assignment_score.group(1)) * problems[f]["points"]
             grade_info += lines
             grade_info.append('################################\n\n')
 
@@ -163,7 +165,7 @@ def upload_grade(canvas):
         print('Cannot upload score for student without AUTOGRADE.json')
 
 # Compute the student's total score from their grade files
-def compute_total_score(student_files, score_scale):
+def compute_total_score(student_files, problems):
     grade_files = [f for f in student_files if f.endswith("_grade.txt")]
     if len(grade_files) == 0:
         print('Error! Can\'t get grade stats for an ungraded student! Giving a 0 for now')
@@ -176,16 +178,16 @@ def compute_total_score(student_files, score_scale):
             # Find the grade for this assignment and add it to the total
             assignment_score = match_score.match(lines[-1])
             if assignment_score:
-                grade_total = grade_total + float(assignment_score.group(1)) * score_scales[f]
+                grade_total = grade_total + float(assignment_score.group(1)) * problems[f]["points"]
     return grade_total
 
 # Compile the student's submission and record compilation errors
 # Will abort if cl.exe is not available
-def compile(cl_stdout_file, student_cpp):
+def compile(cl_stdout_file, problem, name):
     with open(cl_stdout_file, 'w') as cl_stdout:
         try:
-            subprocess.Popen(['cl.exe', '/W4', '/EHsc', student_cpp], stdout=cl_stdout,
-                    universal_newlines=True).wait()
+            subprocess.Popen(['cl.exe', '/W4', '/EHsc', '/Fe' + name,
+                " ".join(problem["files"])], stdout=cl_stdout, universal_newlines=True).wait()
         except:
             print("Fatal Error! cl.exe is not available, did you setup your environment?")
             sys.exit(1)
