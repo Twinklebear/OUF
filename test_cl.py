@@ -30,7 +30,6 @@ print('Grading ' + sys.argv[1])
 main_dir = os.path.abspath('.')
 homework_dir = os.path.abspath('./submissions/' + sys.argv[1])
 ref_homework_dir = os.path.abspath('./reference/' + sys.argv[1])
-ref_homework = os.path.abspath('./reference/' + sys.argv[1] + '.json')
 # Collect list of all program files we're expecting to find
 reference_soln = None
 with open(ref_homework_dir + "/" + sys.argv[1] + ".json", "r") as ref:
