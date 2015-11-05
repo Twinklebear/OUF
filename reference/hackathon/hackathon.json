@@ -1,0 +1,15 @@
+{
+	"ND_Box": {
+		"points": 50,
+		"files": ["ndbox.cpp"],
+		"stdin": "ndbox_stdin.txt",
+		"stdout": "ndbox_stdout.txt"
+	},
+	"GATTACA": {
+		"points": 50,
+		"files": ["gattaca.cpp"],
+		"stdin": "gattaca_stdin.txt",
+		"stdout": "gattaca_stdout.txt"
+	}
+}
+

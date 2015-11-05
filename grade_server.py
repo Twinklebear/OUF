@@ -26,10 +26,10 @@ course_name = settings['courseName']
 assignment_name = settings['assignmentName']
 
 # Collect list of all program files we're expecting to find
-ref_homework_path = os.path.abspath('../reference/' + homework_dir_name)
+ref_homework_dir = os.path.abspath('../reference/' + homework_dir_name)
 # Collect list of all program files we're expecting to find
 reference_soln = None
-with open(ref_homework_dir + "/" + sys.argv[1] + ".json", "r") as ref:
+with open(ref_homework_dir + "/" + homework_dir_name + ".json", "r") as ref:
     reference_soln = json.load(ref)
 
 c = canvas.canvas()
@@ -80,7 +80,7 @@ while True:
         graded_files = [f for f in next(os.walk(student_dir))[2]]
         grading.build_final_score(graded_files, reference_soln, None)
         # Upload their grade
-        #grading.upload_grade(c)
+        grading.upload_grade(c)
 
     # Sleep for 1 hour to poll again
     print("Students graded for {}".format(datetime.datetime.now()))
