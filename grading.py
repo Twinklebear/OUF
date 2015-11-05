@@ -14,15 +14,17 @@ match_case_number = re.compile("[ -]Case (\d+):")
 def compare(reference_output, student_output, result_file):
     diff = ''
     case_failed_count = 0
-    case_number = 0
+    total_cases = 0
     case_failed = False
 
     if os.path.isfile(reference_output):
         with open(reference_output, 'r', encoding='utf8') as ref_out, \
              open(student_output, 'r', encoding='utf8', errors='replace') as student_out:
                 reference = [l.strip() + "\n" for l in ref_out.readlines() if l.strip()]
-                student = [l.strip() + "\n" for l in student_out.readlines() if l.strip()]
-                for line in difflib.unified_diff(reference, student, fromfile='reference', tofile='student'):
+                student = [l.strip() + "\n" for l in student_out.readlines() if l.strip()]                   
+                for line in reference:
+                    total_cases += line.count('Case')                    
+                for line in difflib.unified_diff(reference, student, fromfile='reference', tofile='student'):                    
                     case_match = match_case_number.match(line)
                     if case_match:
                         case_number = int(case_match.group(1))
@@ -46,7 +48,7 @@ def compare(reference_output, student_output, result_file):
     with open(result_file, 'w', encoding='utf8', errors='replace') as result_out:
         result_out.write(diff)
         result_out.write('\nCases Failed: ' + str(case_failed_count) + '\n')
-        result_out.write('Total Cases: ' + str(case_number + 1) + '\n')
+        result_out.write('Total Cases: ' + str(total_cases) + '\n')
 
 match_warning = re.compile('.* warning C\d+:')
 match_error = re.compile('.* error C\d+:')
