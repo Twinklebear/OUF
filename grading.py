@@ -140,19 +140,27 @@ def build_final_score(student_files, score_scale, editor):
 # and post the compile grade files as a comment on it
 def upload_grade(canvas):
     try:
+        fg = open('final_score.diff', 'r', encoding='utf8', errors='replace')
+    except:
+        print("Warning: No final score diff file found, creating a default error report")
+        with open('final_score.diff', 'w') as fg:
+            fg.write("No files were found for your assignment. Are they the right files and named properly?\n")
+
+    try:
         with open('AUTOGRADE.json', 'r') as f, \
             open('final_score.diff', 'r', encoding='utf8', errors='replace') as fg:
                 grade_comment = fg.readlines()
                 grade_match = re.match('Total Score: (-?\d+\.*\d*)', grade_comment[0])
+                grade_total = -1
                 if not grade_match:
                     print('Error grading {}, no total score assigned'.format(os.getcwd()))
-                    return
-                grade_total = float(grade_match.group(1))
+                else:
+                    grade_total = float(grade_match.group(1))
                 student = json.load(f)
                 canvas.gradeAndCommentSubmissionFile(None, student['canvasSubmission']['assignment_id'],
                         student['canvasStudent']['id'], grade_total, 'final_score.diff')
     except:
-        print('Bad student')
+        print('Cannot upload score for student without AUTOGRADE.json')
 
 # Compute the student's total score from their grade files
 def compute_total_score(student_files, score_scale):
