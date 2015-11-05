@@ -35,8 +35,6 @@ reference_soln = None
 with open(ref_homework_dir + "/" + sys.argv[1] + ".json", "r") as ref:
     reference_soln = json.load(ref)
 
-print(reference_soln)
-
 if sys.argv[2] == 'upload':
     c = canvas.canvas()
     courses = c.getCourses()
