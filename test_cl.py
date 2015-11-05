@@ -73,7 +73,7 @@ for dir in next(os.walk(homework_dir))[1]:
 
         # Compile student's programs
         if sys.argv[2] == 'compile':
-            print('Compiling {}'.format(problem))
+            print('Compiling ' + name)
             grading.compile(cl_stdout_file, problem, name)
         # Run all student programs and save output results
         elif ((not os.path.isfile(stdout_file) or not os.path.getsize(stdout_file))\
