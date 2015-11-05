@@ -1,0 +1,11 @@
+5
+Figure
+0 3
+Figure 
+1 2
+Fig.
+0 0
+Point
+10 14
+Hello World 
+1 5

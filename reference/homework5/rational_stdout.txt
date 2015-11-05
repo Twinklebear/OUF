@@ -1,0 +1,35 @@
+Case 0:
+5/6 1/6 1/6 3/2 false
+0.5 0.333333
+Case 1:
+2/1 0/1 1/1 1/1 false
+1 1
+Case 2:
+1/7 -3/7 -2/49 -1/2 true
+-0.142857 0.285714
+Case 3:
+Division by zero
+Case 4:
+Division by zero
+Case 5:
+9/190 29/190 -1/190 -19/10 false
+0.1 -0.0526316
+Case 6:
+64/51 4/51 20/51 17/15 false
+0.666667 0.588235
+Case 7:
+-4/15 -8/15 -4/75 -3/1 true
+-0.4 0.133333
+Case 8:
+-1/1 0/1 1/4 1/1 false
+-0.5 -0.5
+Case 9:
+Division by zero
+Case 10:
+Division by zero
+Case 11:
+103/63 5/63 2/3 54/49 false
+0.857143 0.777778
+Case 12:
+-26/21 -2/21 8/21 7/6 true
+-0.666667 -0.571429

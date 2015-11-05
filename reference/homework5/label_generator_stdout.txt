@@ -1,0 +1,6 @@
+Case 0:
+Figure0 Figure1 Figure2 Figure3
+Case 1:
+Figure 1 Figure 2
+Case 2:
+Fig.0
