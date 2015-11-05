@@ -121,7 +121,7 @@ def build_final_score(student_files, problems, editor):
     grade_total = -1
     for f in grade_files:
         with open(f, 'r', encoding='utf8', errors='replace') as fg:
-            grade_info.append('####### ' + f + ' ########\n')
+            grade_info.append('####### ' + f[:-10] + ' ########\n')
             lines = fg.readlines()
             # Find the grade for this assignment and add it to the total
             assignment_score = match_score.match(lines[-1])
@@ -186,8 +186,8 @@ def compute_total_score(student_files, problems):
 def compile(cl_stdout_file, problem, name):
     with open(cl_stdout_file, 'w') as cl_stdout:
         try:
-            subprocess.Popen(['cl.exe', '/W4', '/EHsc', '/Fe' + name,
-                " ".join(problem["files"])], stdout=cl_stdout, universal_newlines=True).wait()
+            subprocess.Popen(['cl.exe', '/W4', '/EHsc', '/Fe' + name] + problem["files"],
+                    stdout=cl_stdout, universal_newlines=True).wait()
         except:
             print("Fatal Error! cl.exe is not available, did you setup your environment?")
             sys.exit(1)
