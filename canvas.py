@@ -614,6 +614,8 @@ class canvas():
             md5sum = m.hexdigest()
 
 
+        # TODO: I think this is where we crash. Is it becauase the program
+        # crashed dialog stays open?
         if os.path.exists(destDir):
             shutil.rmtree(destDir)
         try:
