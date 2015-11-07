@@ -125,12 +125,9 @@ class canvas():
                 urlString = url
         
             print("Posting: " + urlString)
-            data = urllib.parse.urlencode(params).encode("utf-8")
-            request = urllib.request.Request(urlString, data)
-            request.add_header("Authorization", "Bearer " + self.CANVAS_TOKEN)
-            response = urllib.request.urlopen(request)
-            json_string = response.read().decode('utf-8')
-            return json.loads(json_string)
+            headers = {"Authorization": "Bearer " + self.CANVAS_TOKEN}
+            response = requests.post(urlString, headers=headers, data=params)
+            return response.json()
         except:
             e = sys.exc_info()[0]
             print(e)
@@ -687,6 +684,13 @@ class canvas():
             with open(metadataFileDestDir, "w") as f:
                 json.dump(metadata, f, indent=4)
 
+    def sendMail(self, recipients, subject, body):
+        params = {
+            "recipients[]": recipients,
+            "subject": subject,
+            "body": body,
+        }
+        resp = self.makePost("conversations", params)
 
     def printCourseIds(self, courses):
         for i in courses:
@@ -695,7 +699,7 @@ class canvas():
     def printAssignmentIds(self, assignments):
         for i in assignments:
             print("%10s %s"%(str(i['id']), i['name']))
-  
+
     def printStudentIds(self, students):
         for i in students:
             print("%10s %10s %s"%(str(i['id']), i['id'], i['name']))
