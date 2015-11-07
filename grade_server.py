@@ -42,6 +42,7 @@ while True:
     students = c.downloadAssignment(courseName=course_name, assignmentName=assignment_name,
             subdirName=homework_path)
     print("Downloaded new submissions from {}".format(students))
+
     for student_id in students:
         student_dir = os.path.abspath(homework_path + "/" + str(student_id))
         print('Processing student ' + student_dir)
@@ -83,6 +84,10 @@ while True:
         grading.upload_grade(c)
 
     # Sleep for 1 hour to poll again
-    print("Students graded for {}".format(datetime.datetime.now()))
+    now = datetime.datetime.now()
+    print("Students graded for {}".format(now))
+    if len(students) > 0:
+        c.sendMail([1319338, 1324900], "Students Graded",
+                "Students that submitted by {}:\n{}".format(now, students))
     sleep(60 * 60)
 
