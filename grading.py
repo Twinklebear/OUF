@@ -21,10 +21,10 @@ def compare(reference_output, student_output, result_file):
         with open(reference_output, 'r', encoding='utf8') as ref_out, \
              open(student_output, 'r', encoding='utf8', errors='replace') as student_out:
                 reference = [l.strip() + "\n" for l in ref_out.readlines() if l.strip()]
-                student = [l.strip() + "\n" for l in student_out.readlines() if l.strip()]                   
+                student = [l.strip() + "\n" for l in student_out.readlines() if l.strip()]
                 for line in reference:
-                    total_cases += line.count('Case')                    
-                for line in difflib.unified_diff(reference, student, fromfile='reference', tofile='student'):                    
+                    total_cases += line.count('Case')
+                for line in difflib.unified_diff(reference, student, fromfile='reference', tofile='student'):
                     case_match = match_case_number.match(line)
                     if case_match:
                         case_number = int(case_match.group(1))
@@ -188,7 +188,7 @@ def compute_total_score(student_files, problems):
             # Find the grade for this assignment and add it to the total
             assignment_score = match_score.match(lines[-1])
             if assignment_score:
-                grade_total = grade_total + float(assignment_score.group(1)) * problems[f]["points"]
+                grade_total = grade_total + float(assignment_score.group(1)) * problems[f[:-10]]["points"] / 10.0
     return grade_total
 
 # Compile the student's submission and record compilation errors
