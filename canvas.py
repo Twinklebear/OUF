@@ -9,6 +9,8 @@ import sys,shutil,os,time,hashlib,re
 from pprint import pprint
 import argparse
 import requests
+import stat
+import errno
 
 # To use this Python class, you should create a file named
 # .canvas-token in your home directory. It should contain the lines:
@@ -29,6 +31,14 @@ import requests
 # other functions that you call. Or, you can manually override the
 # courseId in your calls to specific functions.
 
+
+def handleRemoveReadonly(func, path, exc):
+  excvalue = exc[1]
+  if func in (os.rmdir, os.remove) and excvalue.errno == errno.EACCES:
+      os.chmod(path, stat.S_IRWXU| stat.S_IRWXG| stat.S_IRWXO) # 0777
+      func(path)
+  else:
+      raise
 
 class canvas():
     CANVAS_API = ""
@@ -614,7 +624,7 @@ class canvas():
         # TODO: I think this is where we crash. Is it becauase the program
         # crashed dialog stays open?
         if os.path.exists(destDir):
-            shutil.rmtree(destDir)
+            shutil.rmtree(destDir, ignore_errors=False, onerror=handleRemoveReadonly)
         try:
             # tarfile.is_tarfile() and zipfile.is_zipfile() functions
             # are available, but sometimes it misidentifies files (for
