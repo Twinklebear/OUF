@@ -11,6 +11,7 @@ import argparse
 import requests
 import stat
 import errno
+import time
 
 # To use this Python class, you should create a file named
 # .canvas-token in your home directory. It should contain the lines:
@@ -626,7 +627,7 @@ class canvas():
                 shutil.rmtree(destDir, ignore_errors=False, onerror=handleRemoveReadonly)
                 tries += 1
             except:
-                sleep(1)
+                time.sleep(1)
         try:
             # tarfile.is_tarfile() and zipfile.is_zipfile() functions
             # are available, but sometimes it misidentifies files (for
