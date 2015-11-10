@@ -1,0 +1,8 @@
+{
+	"nd_vector": {
+		"points": 100,
+		"files": ["nd_vector.cpp"],
+		"stdin": "nd_vector_stdin.txt",
+		"stdout": "nd_vector_stdout.txt"
+	}
+}
