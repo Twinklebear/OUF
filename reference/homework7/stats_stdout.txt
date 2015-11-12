@@ -1,0 +1,41 @@
+Case 0:
+Min = -4
+Case 1:
+Max = 3
+Case 2:
+Average = 0.5
+Case 3:
+Sum = 2
+Case 4:
+StdDev = 3.10913
+Case 5:
+Min = -12
+Max = 42.5
+Average = 8.9625
+Case 6:
+Min = -4
+Max = 15
+Average = 2.875
+Sum = 17.25
+StdDev = 6.41044
+Case 7:
+Max = 1
+Average = 1
+Sum = 1
+StdDev = nan
+Min = 1
+Case 8:
+Max = 889.783
+Average = 490.183
+Sum = 7352.74
+StdDev = 274.926
+Case 9:
+Min = 237.565
+Sum = 2790.56
+StdDev = 303.41
+Max = 997.49
+Average = 558.111
+Case 10:
+Sum = 1007.31
+StdDev = 382.864
+Average = 201.462

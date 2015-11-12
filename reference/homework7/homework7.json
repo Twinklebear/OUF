@@ -1,0 +1,16 @@
+{
+	"1_organizing": {
+		"points": 30,
+		"files": ["array_main.cpp", "my_array.cpp"],
+		"stdin": "my_array_stdin.txt",
+		"stdout": "my_array_stdout.txt"
+	},
+	"2_stats": {
+		"points": 70,
+		"files": ["stats_main.cpp", "statistic.cpp", "min_stat.cpp",
+				  "max_stat.cpp", "average_stat.cpp", "sum_stat.cpp",
+				  "stddev_stat.cpp"],
+		"stdin": "stats_stdin.txt",
+		"stdout": "stats_stdout.txt"
+	}
+}
