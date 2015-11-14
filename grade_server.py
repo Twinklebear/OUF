@@ -82,9 +82,10 @@ while True:
         grading.build_final_score(graded_files, reference_soln, None)
         # Upload their grade
         grading.upload_grade(c)
+        # CD back up out of the student's directory
+        os.chdir("..")
 
     # Sleep for 1 hour to poll again
-    os.chdir("..")
     now = datetime.datetime.now()
     print("Students graded for {}".format(now))
     if len(students) > 0:
