@@ -619,7 +619,9 @@ class canvas():
                 m.update(data)
             md5sum = m.hexdigest()
 
-        shutil.rmtree(destDir, ignore_errors=False, onerror=handleRemoveReadonly)
+        if os.path.exists(destDir):
+            shutil.rmtree(destDir, ignore_errors=False, onerror=handleRemoveReadonly)
+
         try:
             # tarfile.is_tarfile() and zipfile.is_zipfile() functions
             # are available, but sometimes it misidentifies files (for
