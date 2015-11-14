@@ -84,6 +84,7 @@ while True:
         grading.upload_grade(c)
 
     # Sleep for 1 hour to poll again
+    os.chdir("..")
     now = datetime.datetime.now()
     print("Students graded for {}".format(now))
     if len(students) > 0:
