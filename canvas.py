@@ -70,7 +70,7 @@ class canvas():
                 urlString = self.CANVAS_API+url
             else:
                 urlString = url
-        
+
             print("Getting: " +urlString)
             request = urllib.request.Request(urlString)
             request.add_header("Authorization", "Bearer " + self.CANVAS_TOKEN)
@@ -109,7 +109,7 @@ class canvas():
                 urlString = self.CANVAS_API+url
             else:
                 urlString = url
-        
+
             print("Putting: " +urlString)
             request = urllib.request.Request(urlString, method='PUT')
             request.add_header("Authorization", "Bearer " + self.CANVAS_TOKEN)
@@ -134,7 +134,7 @@ class canvas():
                 urlString = self.CANVAS_API+url
             else:
                 urlString = url
-        
+
             print("Posting: " + urlString)
             headers = {"Authorization": "Bearer " + self.CANVAS_TOKEN}
             response = requests.post(urlString, headers=headers, data=params)
@@ -250,13 +250,13 @@ class canvas():
         if assignmentId == None or studentId == None:
             printf("Can't comment on a submission without a assignment ID and a student ID.")
             exit(1)
-        
+
         self.makePut("courses/"+str(courseId)+
                      "/assignments/"+str(assignmentId)+
                      "/submissions/"+str(studentId)+"?"+
                      urllib.parse.urlencode({"submission[posted_grade]": str(points),
                          "comment[text_comment]": comment}))
-    
+
     # Upload the score for a student's submission and comment on it with our grading summary file
     def gradeAndCommentSubmissionFile(self, courseId, assignmentId, studentId, points, commentFile):
         courseId = courseId or self.courseId
@@ -266,7 +266,7 @@ class canvas():
         if assignmentId == None or studentId == None:
             printf("Can't comment on a submission without a assignment ID and a student ID.")
             exit(1)
-        
+
         # Post the student's score if the assignment was graded. We have a negative grade
         # when running from the grading server since it doesn't score students
         if points >= 0:
@@ -298,7 +298,7 @@ class canvas():
         else:
             return self.makeRequest("courses/"+str(courseId)+"/students/submissions?assignment_ids[]="+str(assignmentId)+"&"+commonargs)
 
-    
+
     def findStudent(self, students, searchString):
         """Returns a student object that matches the students name, username, or ID. The searchString must match one of the fields in the student object exactly!"""
         searchString = str(searchString).lower()
@@ -385,7 +385,7 @@ class canvas():
             if s['attempt'] > submission['attempt']:
                 return False
         return True
-    
+
     def findSubmissionsToGrade(self, submissions, attempt=-1):
         """Returns newest non-late submissions. If attempt is set, only return the submissions with that attempt number."""
         goodSubmissions = []
@@ -441,7 +441,7 @@ class canvas():
 #                print("ERROR processing student: ")
 #                self.prettyPrint(student)
 #                return
-                        
+
             if len(studentSubmissionHist) == 0:
                 print(fmtStr%("", " none", 0, str(student['id']), student['name']))
             for hist in studentSubmissionHist:
@@ -536,8 +536,9 @@ class canvas():
             print("%-12s skipping download because submission is locked." % login)
             return False
         if newAttempt <= cachedAttempt:
-            print("%-12s is up to date" % login)
-            return False
+            print("TODO: canvas.py:539 hack out check for up to date submission")
+            #print("%-12s is up to date" % login)
+            #return False
 
         archiveFile  = os.path.join(directory,str(login) + exten)
 
@@ -548,7 +549,7 @@ class canvas():
             if os.path.exists(archiveFile):
                 os.unlink(archiveFile)
         # Download the file
-        print("%-12s downloading attempt %d submitted %s" % (login, newAttempt, 
+        print("%-12s downloading attempt %d submitted %s" % (login, newAttempt,
               self.prettyDate(utc_dt, datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc))))
         try:
             urllib.request.urlretrieve(attachment['url'], directory+"/" + str(login) + exten)
@@ -563,8 +564,6 @@ class canvas():
         with open(metadataFiles[0], "w") as f:
             metadata_string = json.dump(metadataNew, f, indent=4)
         return True
-        
-        
 
     def downloadSubmissions(self, submissions, students, dir=None, group_memberships={}):
         """Downloads submissions each of the students. Assumes that students submit one file
@@ -621,13 +620,7 @@ class canvas():
                 m.update(data)
             md5sum = m.hexdigest()
 
-        tries = 0
-        while os.path.exists(destDir) and tries < 10:
-            try:                
-                shutil.rmtree(destDir, ignore_errors=False, onerror=handleRemoveReadonly)
-                tries += 1
-            except:
-                time.sleep(1)
+        shutil.rmtree(destDir, ignore_errors=False, onerror=handleRemoveReadonly)
         try:
             # tarfile.is_tarfile() and zipfile.is_zipfile() functions
             # are available, but sometimes it misidentifies files (for
@@ -669,7 +662,6 @@ class canvas():
                 metadata = json.load(f)
         # add md5sum to metadata
         metadata['md5sum']=md5sum
-        
         # If subdirectory wasn't created, overwrite existing metadata file
         if not os.path.exists(destDir):
             with open(metadataFile, "w") as f:
@@ -735,7 +727,7 @@ class canvas():
 
         # Get a list of assignments
         assignments = self.getAssignments(courseId=courseId)
-        
+
         # Get a list of the students in the course
         students = self.getStudents(courseId=courseId)
         # Filter that list down to the requested student
@@ -773,7 +765,7 @@ class canvas():
             studentId = students[0]['id']
         else:
             studentId = None
-        
+
         submissions = self.getSubmissions(courseId=courseId, assignmentId=assignmentId, studentId=studentId)
 
         # Filter out the submissions that we want to grade (newest, non-late submission)
