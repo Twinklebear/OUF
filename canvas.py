@@ -536,9 +536,8 @@ class canvas():
             print("%-12s skipping download because submission is locked." % login)
             return False
         if newAttempt <= cachedAttempt:
-            print("TODO: canvas.py:539 hack out check for up to date submission")
-            #print("%-12s is up to date" % login)
-            #return False
+            print("%-12s is up to date" % login)
+            return False
 
         archiveFile  = os.path.join(directory,str(login) + exten)
 
