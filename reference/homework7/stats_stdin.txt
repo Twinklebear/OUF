@@ -41,5 +41,5 @@ min sum stddev max average
 237.565 997.49 453.862 726.111 375.529
 3
 sum stddev average
-5
+2
 128.197 879.112

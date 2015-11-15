@@ -37,5 +37,5 @@ Max = 997.49
 Average = 558.111
 Case 10:
 Sum = 1007.31
-StdDev = 382.864
-Average = 201.462
+StdDev = 530.977
+Average = 503.654
