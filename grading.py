@@ -127,7 +127,8 @@ def build_final_score(student_files, problems, editor):
         return
 
     grade_info = ['Total Score']
-    grade_total = -1
+    grade_total = 0
+    was_graded = False
     for f in grade_files:
         with open(f, 'r', encoding='utf8', errors='replace') as fg:
             grade_info.append('####### ' + f[:-10] + ' ########\n')
@@ -136,10 +137,11 @@ def build_final_score(student_files, problems, editor):
             assignment_score = match_score.match(lines[-1])
             if assignment_score:
                 grade_total += float(assignment_score.group(1)) * problems[f[:-10]]["points"] / 10
+                was_graded = True
             grade_info += lines
             grade_info.append('################################\n\n')
-    if grade_total != -1:
-        grade_total += 1
+    if not was_graded:
+        grade_total = -1
     grade_info[0] = 'Total Score: ' + str(grade_total) + '\n\n'
     grade_comment = ''.join(grade_info)
     with open('final_score.diff', 'w', encoding='utf8', errors='replace') as f:
