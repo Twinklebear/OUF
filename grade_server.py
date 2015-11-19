@@ -85,11 +85,13 @@ while True:
         # CD back up out of the student's directory
         os.chdir("..")
 
-    # Sleep for 1 hour to poll again
     now = datetime.datetime.now()
     print("Students graded for {}".format(now))
+    # If we actually graded any students send the TAs mail on canvas with the
+    # list of students that were graded
     if len(students) > 0:
         c.sendMail([1319338, 1324900], "Students Graded",
                 "Students that submitted by {}:\n{}".format(now, students))
-    sleep(60 * 60)
+    # Sleep for 30min before checking for new submissions
+    sleep(30 * 60)
 
