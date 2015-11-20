@@ -223,6 +223,8 @@ def run_student(exe, stdin_file, stdout_file, cl_stdout_file):
                     f.write("\nProcess Status: Timed Out\n")
             except:
                 print('Exception!')
+                with open(cl_stdout_file, "a") as f:
+                    f.write("\nProcess Status: Other Exception\n")
     else: # run without input
         with open(stdout_file, 'w') as stdout_:
             try:
@@ -239,3 +241,6 @@ def run_student(exe, stdin_file, stdout_file, cl_stdout_file):
                     f.write("\nProcess Status: Timed Out\n")
             except:
                 print('Exception!')
+                with open(cl_stdout_file, "a") as f:
+                    f.write("\nProcess Status: Other Exception\n")
+
