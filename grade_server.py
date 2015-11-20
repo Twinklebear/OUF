@@ -119,7 +119,7 @@ if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("Running grading server")
         scheduler.start()
-        scheduler.add_job(grade_new_submissions, "interval", minutes=10)
+        scheduler.add_job(grade_new_submissions, "interval", minutes=15)
         atexit.register(lambda: scheduler.shutdown(wait=False))
         app.run(host="0.0.0.0")
     elif sys.argv[1] == "single":
