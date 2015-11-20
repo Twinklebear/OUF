@@ -121,7 +121,7 @@ if __name__ == "__main__":
         scheduler.start()
         scheduler.add_job(grade_new_submissions, "interval", minutes=10)
         atexit.register(lambda: scheduler.shutdown(wait=False))
-        app.run()
+        app.run(host="0.0.0.0")
     elif sys.argv[1] == "single":
         grade_new_submissions()
 
