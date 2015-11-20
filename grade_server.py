@@ -8,7 +8,9 @@ import datetime
 import canvas
 import autograder
 import grading
-from time import sleep
+import atexit
+from apscheduler.schedulers.background import BackgroundScheduler
+from flask import Flask
 
 # Check that cl.exe is accessible
 try:
@@ -37,7 +39,12 @@ courses = c.getCourses()
 course_id = c.findCourseId(courses, 'CS 6962-001 Fall 2015 Programming for Engineers')
 c = canvas.canvas(courseId=course_id)
 
-while True:
+# A dict of the students that have submitted so far, and the number of times
+# they've submitted
+student_submission_count = {}
+
+# Check for new submissions and grade them
+def grade_new_submissions():
     print("Checking for new submissions")
     students = c.downloadAssignment(courseName=course_name, assignmentName=assignment_name,
             subdirName=homework_path)
@@ -84,6 +91,10 @@ while True:
         grading.upload_grade(c)
         # CD back up out of the student's directory
         os.chdir("..")
+        if student_id not in student_submission_count:
+            student_submission_count[student_id] = 1
+        else:
+            student_submission_count[student_id] += 1
 
     now = datetime.datetime.now()
     print("Students graded for {}".format(now))
@@ -92,6 +103,25 @@ while True:
     if len(students) > 0:
         c.sendMail([1319338, 1324900], "Students Graded",
                 "Students that submitted by {}:\n{}".format(now, students))
-    # Sleep for 30min before checking for new submissions
-    sleep(30 * 60)
+
+# Setup the background scheduler to run the grading job
+scheduler = BackgroundScheduler()
+
+# Setup the Flask server
+app = Flask("Grading Server")
+
+@app.route("/")
+def show_status():
+    return "Grading Server is running, submissions so far: <pre>{}</pre>".format(
+            json.dumps(student_submission_count, indent=4))
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("Running grading server")
+        scheduler.start()
+        scheduler.add_job(grade_new_submissions, "interval", minutes=10)
+        atexit.register(lambda: scheduler.shutdown(wait=False))
+        app.run()
+    elif sys.argv[1] == "single":
+        grade_new_submissions()
 
