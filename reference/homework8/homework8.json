@@ -1,0 +1,9 @@
+{
+	"Contact_Manager": {
+		"points": 100,
+		"files": ["contacts_main.cpp", "contact.cpp"],
+		"stdin": "contacts_stdin.txt",
+		"stdout": "contacts_stdout.txt"
+	}
+}
+

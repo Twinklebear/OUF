@@ -1,0 +1,78 @@
+Case 0:
+> Case 1:
+> no contacts
+> first name: last name: phone number: e-mail: > Lovelace, Ada
+> Case 2:
+> first name: last name: phone number: e-mail: > first name: last name: phone number: e-mail: > first name: last name: phone number: e-mail: > Hopper, Grace
+Lamport, Leslie
+Ritchie, Dennis
+> first name: last name: removed Dennis Ritchie
+> first name: last name: contact not found
+> Hopper, Grace
+Lamport, Leslie
+> first name: last name: contact not found
+> first name: last name: Name: Leslie Lamport
+Phone Number: 000912931
+E-mail: leslie.lamport
+> first name: last name: phone number: e-mail: > Hopper, Grace
+Lamport, Leslie
+Ritchie, Dennis
+> first name: last name: Name: Dennis Ritchie
+Phone Number: 555898123
+E-mail: dennis@email2
+> Case 3:
+> first name: last name: phone number: e-mail: > first name: last name: phone number: e-mail: > Hopper, Grace
+Ritchie, Dennis
+> first name: last name: removed Dennis Ritchie
+> Hopper, Grace
+> first name: last name: contact not found
+> first name: last name: contact not found
+> Hopper, Grace
+> first name: last name: phone number: e-mail: > first name: last name: Name: Dennis Ritchie
+Phone Number: 555898123
+E-mail: dennis@email
+> Hopper, Grace
+Ritchie, Dennis
+> first name: last name: removed Dennis Ritchie
+> first name: last name: Name: Grace Hopper
+Phone Number: 555823457
+E-mail: hopper@debugging
+> Case 4:
+> first name: last name: phone number: e-mail: > first name: last name: phone number: e-mail: > first name: last name: phone number: e-mail: > first name: last name: phone number: e-mail: > Ritchie, Dennis
+> first name: last name: Name: Dennis Ritchie
+Phone Number: 555898123
+E-mail: dennis@email
+> Case 5:
+> first name: last name: phone number: e-mail: > first name: last name: phone number: e-mail: > first name: last name: phone number: e-mail: > first name: last name: phone number: e-mail: > first name: last name: phone number: e-mail: > first name: last name: phone number: e-mail: > first name: last name: phone number: e-mail: > Hopper, Grace
+Jackson, Bob
+Jackson, Jack
+Kernighan, Brian
+Ritchie, Bob
+Ritchie, Dennis
+> first name: last name: Name: Grace Hopper
+Phone Number: 5551020001238123
+E-mail: grace@email
+> first name: last name: removed Jack Jackson
+> Hopper, Grace
+Jackson, Bob
+Kernighan, Brian
+Ritchie, Bob
+Ritchie, Dennis
+> first name: last name: Name: Bob Jackson
+Phone Number: 555898123
+E-mail: dennis@email
+> first name: last name: contact not found
+> first name: last name: Name: Bob Ritchie
+Phone Number: 555898123
+E-mail: dennis@email
+> Hopper, Grace
+Jackson, Bob
+Kernighan, Brian
+Ritchie, Bob
+Ritchie, Dennis
+> first name: last name: removed Bob Ritchie
+> Hopper, Grace
+Jackson, Bob
+Kernighan, Brian
+Ritchie, Dennis
+> 
