@@ -1,5 +1,3 @@
-6
-exit
 list
 add
 Ada
@@ -7,7 +5,6 @@ Lovelace
 555123456
 ada@lovelace.mathmail
 list
-exit
 add
 Grace
 Hopper
@@ -46,7 +43,6 @@ list
 find
 Dennis
 Ritchie
-exit
 add
 Grace
 Hopper
@@ -84,7 +80,6 @@ Ritchie
 find
 Grace
 Hopper
-exit
 add
 Dennis
 Ritchie
@@ -109,7 +104,6 @@ list
 find
 Dennis
 Ritchie
-exit
 add
 Dennis
 Ritchie
