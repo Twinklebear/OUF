@@ -147,8 +147,9 @@ class canvas():
     def postFile(self, url, params, commentFile):
         """Post file to an external service, like the external Canvas file host"""
         try:
-            print("Posting: " + url)
-            request = requests.post(url, data=params, files={"file": commentFile})
+            print("Posting file to: " + url)
+            response = requests.post(url, data=params, files={"file": commentFile})
+            return response.json()
         except:
             e = sys.exc_info()[0]
             print(e)
@@ -212,12 +213,12 @@ class canvas():
         response = self.makePost("courses/" + str(courseId) + "/assignments/" + str(assignmentId) +
                 "/submissions/" + str(studentId) + "/comments/files", params)
         # Step 2: Using the information from step 1 about where to send the file and auth info to do so,
-        # actually upload the file
+        # actually upload the file and get back the file ID
+        success = None
         with open(commentFile, 'rb') as f:
-            self.postFile(response["upload_url"], response["upload_params"], f)
             # If we uploaded successfully this will tell us the actual file ID we can reference when making the
             # comment on the student's submission
-            success = self.makePost(response["upload_params"]["success_action_redirect"], {"Content-Length": 0})
+            success = self.postFile(response["upload_url"], response["upload_params"], f)
 
         # Now comment on the student's submission to attach the file
         self.makePut("courses/" + str(courseId) +
