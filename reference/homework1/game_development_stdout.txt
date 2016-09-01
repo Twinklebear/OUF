@@ -1,0 +1,20 @@
+Case 0:
+boss health is 32200
+Case 1:
+boss health is 31000
+Case 2:
+no healing the boss to kill it!
+boss health is 32767
+Case 3:
+boss health is 0
+the boss is dead!
+Case 4:
+boss health is 0
+the boss is dead!
+Case 5:
+boss health is 32767
+Case 6:
+no healing the boss to kill it!
+boss health is 32767
+Case 7:
+boss health is 32000

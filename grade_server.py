@@ -36,7 +36,7 @@ with open(ref_homework_dir + "/" + homework_dir_name + ".json", "r") as ref:
 
 c = canvas.canvas()
 courses = c.getCourses()
-course_id = c.findCourseId(courses, 'CS 6962-001 Fall 2015 Programming for Engineers')
+course_id = c.findCourseId(courses, 'ME EN 6250-001 Fall 2016 Programming for Engin')
 c = canvas.canvas(courseId=course_id)
 
 # A dict of the students that have submitted so far, and the number of times

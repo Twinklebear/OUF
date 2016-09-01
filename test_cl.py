@@ -38,7 +38,7 @@ with open(ref_homework_dir + "/" + sys.argv[1] + ".json", "r") as ref:
 if sys.argv[2] == 'upload':
     c = canvas.canvas()
     courses = c.getCourses()
-    course_id = c.findCourseId(courses, 'CS 6962-001 Fall 2015 Programming for Engineers')
+    course_id = c.findCourseId(courses, 'ME EN 6250-001 Fall 2016 Programming for Engin')
     c = canvas.canvas(courseId=course_id)
 
 grade_stats = []

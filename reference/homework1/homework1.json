@@ -1,0 +1,26 @@
+{
+	"testing_cases": {
+		"points": 10,
+		"files": ["testing_cases.cpp"],
+		"stdin": "testing_cases_stdin.txt",
+		"stdout": "testing_cases_stdout.txt"
+	},
+	"celsius_fahrenheit": {
+		"points": 20,
+		"files": ["celsius_fahrenheit.cpp"],
+		"stdin": "celsius_fahrenheit_stdin.txt",
+		"stdout": "celsius_fahrenheit_stdout.txt"
+	},
+	"game_development": {
+		"points": 40,
+		"files": ["game_development.cpp"],
+		"stdin": "game_development_stdin.txt",
+		"stdout": "game_development_stdout.txt"
+	},
+	"preventing_overflow": {
+		"points": 30,
+		"files": ["preventing_overflow.cpp"],
+		"stdin": "preventing_overflow_stdin.txt",
+		"stdout": "preventing_overflow_stdout.txt"
+	}
+}
