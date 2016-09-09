@@ -6,6 +6,7 @@ import re
 import shutil
 import json
 import canvas
+import logging
 
 match_case_number = re.compile("[ -]Case (\d+):")
 # compare the output of a student's program to the reference output, writing the results into a
@@ -160,6 +161,8 @@ def upload_grade(canvas):
         with open('final_score.diff', 'w') as fg:
             fg.write("No files were found for your assignment. Are they the right files and named properly?\n")
 
+    logging.basicConfig(filename="D:/Classes/Programming for Engineers/autograder/error.log", level=logging.DEBUG)
+    log = logging.getLogger("ex")
     try:
         with open('AUTOGRADE.json', 'r') as f, \
             open('final_score.diff', 'r', encoding='utf8', errors='replace') as fg:
@@ -173,7 +176,8 @@ def upload_grade(canvas):
                 student = json.load(f)
                 canvas.gradeAndCommentSubmissionFile(None, student['canvasSubmission']['assignment_id'],
                         student['canvasStudent']['id'], grade_total, 'final_score.diff')
-    except:
+    except Exception as err:
+        log.exception(err)
         print('Cannot upload score for student without AUTOGRADE.json')
 
 # Compute the student's total score from their grade files

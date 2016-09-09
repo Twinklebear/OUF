@@ -1,2 +1,36 @@
-500000049985.94
-500000050000.00
+Case 0:
+1 rings were sold
+Bill's program outputs 0.25
+The exact profit is    0.25
+Case 1:
+100 rings were sold
+Bill's program outputs 49525.00
+The exact profit is    49525.00
+Case 2:
+4000 rings were sold
+Bill's program outputs 79981000.00
+The exact profit is    79981000.00
+Case 3:
+200000 rings were sold
+Bill's program outputs 199999050000.00
+The exact profit is    199999050000.00
+Case 4:
+5000000 rings were sold
+Bill's program outputs 124999976250000.00
+The exact profit is    124999976250000.00
+Case 5:
+10000000 rings were sold
+Bill's program outputs 499999952500000.00
+The exact profit is    499999952500000.00
+Case 6:
+20000000 rings were sold
+Bill's program outputs 1999999905000000.00
+The exact profit is    1999999905000000.00
+Case 7:
+21222250 rings were sold
+Bill's program outputs 2251919374506672.00
+The exact profit is    2251919374506812.50
+Case 8:
+30000000 rings were sold
+Bill's program outputs 4499999855305422.00
+The exact profit is    4499999857500000.00

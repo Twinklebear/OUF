@@ -43,6 +43,7 @@ if sys.argv[2] == 'upload':
 
 grade_stats = []
 # Collect the list of all student directories
+print(homework_dir)
 for dir in next(os.walk(homework_dir))[1]:
     student_dir = os.path.abspath(homework_dir + '/' + dir)
     print('Processing student ' + student_dir)

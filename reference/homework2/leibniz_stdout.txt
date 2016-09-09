@@ -1,1 +1,18 @@
-3.1415
+Case 0:
+Pi estimated as: 4.00000000
+Case 1:
+Pi estimated as: 3.04183962
+Case 2:
+Pi estimated as: 3.13159290
+Case 3:
+Pi estimated as: 3.14059265
+Case 4:
+Pi estimated as: 3.14149265
+Case 5:
+Pi estimated as: 3.14158265
+Case 6:
+Pi estimated as: 3.14159165
+Case 7:
+Pi estimated as: 3.14159255
+Case 8:
+Pi estimated as: 3.14159264
