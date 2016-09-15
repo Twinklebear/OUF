@@ -272,7 +272,7 @@ class canvas():
                          "comment[text_comment]": comment}))
 
     # Upload the score for a student's submission and comment on it with our grading summary file
-    def gradeAndCommentSubmissionFile(self, courseId, assignmentId, studentId, points, commentFile):
+    def gradeAndCommentSubmissionFile(self, courseId, assignmentId, studentId, points, commentFile, final):
         courseId = courseId or self.courseId
         if courseId == None:
             print("Can't comment on submissions without a courseId.")
@@ -289,7 +289,7 @@ class canvas():
                     "/submissions/" + str(studentId) + "?" +
                     urllib.parse.urlencode({"submission[posted_grade]": str(points)}))
         # Upload the score summary file
-        self.uploadSubmissionCommentFile(courseId, assignmentId, studentId, commentFile)
+        self.uploadSubmissionCommentFile(courseId, assignmentId, studentId, commentFile, final)
 
     def getSubmissions(self, courseId=None, assignmentId=None, studentId=None):
         """Gets all submissions for a course, all submissions for a student in a course, or all submissions for a specific assignment+student combination."""
