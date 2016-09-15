@@ -88,7 +88,7 @@ def grade_new_submissions():
         graded_files = [f for f in next(os.walk(student_dir))[2]]
         grading.build_final_score(graded_files, reference_soln, None)
         # Upload their grade
-        grading.upload_grade(c)
+        grading.upload_grade(c, False)
         # CD back up out of the student's directory
         os.chdir("..")
         if student_id not in student_submission_count:

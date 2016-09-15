@@ -153,7 +153,7 @@ def build_final_score(student_files, problems, editor):
 # Compile all the *_grade.txt files for a student into a single one and
 # compute the overall score. Then submit the grade for the assignment
 # and post the compile grade files as a comment on it
-def upload_grade(canvas):
+def upload_grade(canvas, final=True):
     try:
         fg = open('final_score.diff', 'r', encoding='utf8', errors='replace')
     except:
@@ -174,7 +174,7 @@ def upload_grade(canvas):
                     grade_total = float(grade_match.group(1))
                 student = json.load(f)
                 canvas.gradeAndCommentSubmissionFile(None, student['canvasSubmission']['assignment_id'],
-                        student['canvasStudent']['id'], grade_total, 'final_score.diff')
+                        student['canvasStudent']['id'], grade_total, 'final_score.diff', final)
     except Exception as err:
         log.exception(err)
         print('Cannot upload score for student without AUTOGRADE.json')

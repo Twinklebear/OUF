@@ -192,7 +192,7 @@ class canvas():
                                                                   "page": "1"}))
         return allAssignments
 
-    def uploadSubmissionCommentFile(self, courseId, assignmentId, studentId, commentFile):
+    def uploadSubmissionCommentFile(self, courseId, assignmentId, studentId, commentFile, final=True):
         courseId = courseId or self.courseId
         if courseId == None:
             print("Can't comment on submissions without a courseId.")
@@ -228,7 +228,10 @@ class canvas():
         if not "id" in success:
             with open(commentFile, 'r') as f:
                 email = "There was an error posting the diff file as a comment, it is below.\n{}\n".format(f.read())
-                self.sendMail([1319338, 1324900, studentId], "Submission feedback", email)
+                if final:
+                    self.sendMail([1319338, 1324900, studentId], "Submission feedback", email)
+                else:
+                    self.sendMail([studentId], "Submission feedback", email)
         else:
             # Now comment on the student's submission to attach the file
             self.makePut("courses/" + str(courseId) +
