@@ -1,0 +1,26 @@
+{
+    "Find Min Max": {
+		"points": 10,
+		"files": ["find_min_max.cpp"],
+		"stdin": "find_min_max_stdin.txt",
+		"stdout": "find_min_max_stdout.txt"
+	},
+    "Password Strength Calculator": {
+		"points": 30,
+		"files": ["password_strength_calculator.cpp"],
+		"stdin": "password_strength_calculator_stdin.txt",
+		"stdout": "password_strength_calculator_stdout.txt"
+	},
+    "Reverse a Number": {
+		"points": 30,
+		"files": ["reverse_a_number.cpp"],
+		"stdin": "reverse_a_number_stdin.txt",
+		"stdout": "reverse_a_number_stdout.txt"
+	},
+	"Frame a Name": {
+		"points": 30,
+		"files": ["frame_a_name.cpp"],
+		"stdin": "frame_a_name_stdin.txt",
+		"stdout": "frame_a_name_stdout.txt"
+	}
+}
