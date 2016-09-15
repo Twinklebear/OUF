@@ -702,10 +702,12 @@ class canvas():
                 json.dump(metadata, f, indent=4)
 
     def sendMail(self, recipients, subject, body):
+        groupConversation = len(recipients) > 1
         params = {
             "recipients[]": recipients,
             "subject": subject,
             "body": body,
+            "group_conversation": groupConversation,
         }
         resp = self.makePost("conversations", params)
 
