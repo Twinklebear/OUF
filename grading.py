@@ -161,7 +161,6 @@ def upload_grade(canvas):
         with open('final_score.diff', 'w') as fg:
             fg.write("No files were found for your assignment. Are they the right files and named properly?\n")
 
-    logging.basicConfig(filename="error.log", level=logging.DEBUG)
     log = logging.getLogger("ex")
     try:
         with open('AUTOGRADE.json', 'r') as f, \
