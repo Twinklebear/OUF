@@ -12,6 +12,7 @@ import requests
 import stat
 import errno
 import time
+import logging
 
 # To use this Python class, you should create a file named
 # .canvas-token in your home directory. It should contain the lines:
@@ -219,7 +220,12 @@ class canvas():
             # If we uploaded successfully this will tell us the actual file ID we can reference when making the
             # comment on the student's submission
             success = self.postFile(response["upload_url"], response["upload_params"], f)
+            if not "id" in success:
+                print("Error getting canvas file upload: {}".format(success["message"]))
+                log = logging.getLogger("ex")
+                log.exception("Error getting canvas file upload: {}".format(success["message"]))
 
+        print(success)
         # Now comment on the student's submission to attach the file
         self.makePut("courses/" + str(courseId) +
                 "/assignments/" + str(assignmentId) +
