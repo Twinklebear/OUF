@@ -225,13 +225,17 @@ class canvas():
                 log = logging.getLogger("ex")
                 log.exception("Error getting canvas file upload: {}".format(success["message"]))
 
-        print(success)
-        # Now comment on the student's submission to attach the file
-        self.makePut("courses/" + str(courseId) +
-                "/assignments/" + str(assignmentId) +
-                "/submissions/" + str(studentId) + "?" +
-                urllib.parse.urlencode({"comment[file_ids][]" : success["id"],
-                    "comment[text_comment]": "Please see the attached file for your grading summary"}))
+        if not "id" in success:
+            with open(commentFile, 'r') as f:
+                email = "There was an error posting the diff file as a comment, it is below.\n{}\n".format(f.read())
+                self.sendMail([1319338, 1324900, studentId], "Submission feedback", email)
+        else:
+            # Now comment on the student's submission to attach the file
+            self.makePut("courses/" + str(courseId) +
+                    "/assignments/" + str(assignmentId) +
+                    "/submissions/" + str(studentId) + "?" +
+                    urllib.parse.urlencode({"comment[file_ids][]" : success["id"],
+                        "comment[text_comment]": "Please see the attached file for your grading summary"}))
 
 
     def commentOnSubmission(self, courseId, assignmentId, studentId, comment):
