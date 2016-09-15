@@ -246,4 +246,12 @@ def run_student(exe, stdin_file, stdout_file, cl_stdout_file):
                 print('Exception!')
                 with open(cl_stdout_file, "a") as f:
                     f.write("\nProcess Status: Other Exception\n")
+    # Check the output size of the file
+    statinfo = os.stat(stdout_file)
+    if statinfo.st_size > 32 * 1024:
+        with open(stdout_file, 'w') as f:
+            f.write("CRITICAL OUTPUT ERROR:\n")
+            f.write("YOUR PROCESS PRODUCED BEYOND 32KB OF OUTPUT AND OUTPUT WAS IGNORED\n")
+            f.write("DO NOT PRINT DEBUG LOGGING IN THE AUTOGRADER\n")
+            f.write("YOU MAY BE PRINTING OUT OF BOUNDS OF MEMORY OR BE MISSING A NULL TERMINATOR\n")
 
