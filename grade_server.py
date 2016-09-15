@@ -98,11 +98,6 @@ def grade_new_submissions():
 
     now = datetime.datetime.now()
     print("Students graded for {}".format(now))
-    # If we actually graded any students send the TAs mail on canvas with the
-    # list of students that were graded
-    if len(students) > 0:
-        c.sendMail([1319338, 1324900], "Students Graded",
-                "Students that submitted by {}:\n{}".format(now, students))
 
 # Setup the background scheduler to run the grading job
 scheduler = BackgroundScheduler()
