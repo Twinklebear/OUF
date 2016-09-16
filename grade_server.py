@@ -47,7 +47,7 @@ student_submission_count = {}
 def grade_new_submissions():
     print("Checking for new submissions")
     students = c.downloadAssignment(courseName=course_name, assignmentName=assignment_name,
-            subdirName=homework_path)
+            subdirName=homework_path, allowLate=True)
     print("Downloaded new submissions from {}".format(students))
 
     for student_id in students:
