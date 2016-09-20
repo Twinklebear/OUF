@@ -8,6 +8,7 @@ import json
 import canvas
 import statistics
 import grading
+import logging
 import matplotlib.pyplot as plt
 
 if len(sys.argv) < 3:
@@ -41,6 +42,7 @@ if sys.argv[2] == 'upload':
     course_id = c.findCourseId(courses, 'ME EN 6250-001 Fall 2016 Programming for Engin')
     c = canvas.canvas(courseId=course_id)
 
+logging.basicConfig(filename="error.log", level=logging.DEBUG)
 grade_stats = []
 # Collect the list of all student directories
 print(homework_dir)

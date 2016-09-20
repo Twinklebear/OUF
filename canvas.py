@@ -12,6 +12,7 @@ import requests
 import stat
 import errno
 import time
+import logging
 
 # To use this Python class, you should create a file named
 # .canvas-token in your home directory. It should contain the lines:
@@ -191,7 +192,7 @@ class canvas():
                                                                   "page": "1"}))
         return allAssignments
 
-    def uploadSubmissionCommentFile(self, courseId, assignmentId, studentId, commentFile):
+    def uploadSubmissionCommentFile(self, courseId, assignmentId, studentId, commentFile, final=True):
         courseId = courseId or self.courseId
         if courseId == None:
             print("Can't comment on submissions without a courseId.")
@@ -219,13 +220,25 @@ class canvas():
             # If we uploaded successfully this will tell us the actual file ID we can reference when making the
             # comment on the student's submission
             success = self.postFile(response["upload_url"], response["upload_params"], f)
+            if not "id" in success:
+                print("Error getting canvas file upload: {}".format(success["message"]))
+                log = logging.getLogger("ex")
+                log.exception("Error getting canvas file upload: {}".format(success["message"]))
 
-        # Now comment on the student's submission to attach the file
-        self.makePut("courses/" + str(courseId) +
-                "/assignments/" + str(assignmentId) +
-                "/submissions/" + str(studentId) + "?" +
-                urllib.parse.urlencode({"comment[file_ids][]" : success["id"],
-                    "comment[text_comment]": "Please see the attached file for your grading summary"}))
+        if not "id" in success:
+            with open(commentFile, 'r') as f:
+                email = "There was an error posting the diff file as a comment, it is below.\n{}\n".format(f.read())
+                if final:
+                    self.sendMail([1319338, 1324900, studentId], "Submission feedback", email)
+                else:
+                    self.sendMail([studentId], "Submission feedback", email)
+        else:
+            # Now comment on the student's submission to attach the file
+            self.makePut("courses/" + str(courseId) +
+                    "/assignments/" + str(assignmentId) +
+                    "/submissions/" + str(studentId) + "?" +
+                    urllib.parse.urlencode({"comment[file_ids][]" : success["id"],
+                        "comment[text_comment]": "Please see the attached file for your grading summary"}))
 
 
     def commentOnSubmission(self, courseId, assignmentId, studentId, comment):
@@ -259,7 +272,7 @@ class canvas():
                          "comment[text_comment]": comment}))
 
     # Upload the score for a student's submission and comment on it with our grading summary file
-    def gradeAndCommentSubmissionFile(self, courseId, assignmentId, studentId, points, commentFile):
+    def gradeAndCommentSubmissionFile(self, courseId, assignmentId, studentId, points, commentFile, final):
         courseId = courseId or self.courseId
         if courseId == None:
             print("Can't comment on submissions without a courseId.")
@@ -276,7 +289,7 @@ class canvas():
                     "/submissions/" + str(studentId) + "?" +
                     urllib.parse.urlencode({"submission[posted_grade]": str(points)}))
         # Upload the score summary file
-        self.uploadSubmissionCommentFile(courseId, assignmentId, studentId, commentFile)
+        self.uploadSubmissionCommentFile(courseId, assignmentId, studentId, commentFile, final)
 
     def getSubmissions(self, courseId=None, assignmentId=None, studentId=None):
         """Gets all submissions for a course, all submissions for a student in a course, or all submissions for a specific assignment+student combination."""
@@ -362,9 +375,9 @@ class canvas():
         return None
 
     def isSubmissionLate(self, submission):
-        #if submission['late']:
-        #    return True
-        #else:
+        if submission['late']:
+            return True
+        else:
             return False
 
     def isSubmissionNewest(self, submission, submission_history):
@@ -374,20 +387,20 @@ class canvas():
         return True
 
     def isSubmissionNewestNonLate(self, submission, submission_history):
-        #if submission['late']:
-        #    return False
+        if submission['late']:
+            return False
         return True
 
         # Look for a non-late submission in the history with a greater
         # attempt number.
         for s in submission_history:
-            #if s['late']:
-            #    continue
+            if s['late']:
+                continue
             if s['attempt'] > submission['attempt']:
                 return False
         return True
 
-    def findSubmissionsToGrade(self, submissions, attempt=-1):
+    def findSubmissionsToGrade(self, submissions, attempt=-1, allowLate=False):
         """Returns newest non-late submissions. If attempt is set, only return the submissions with that attempt number."""
         goodSubmissions = []
 
@@ -395,7 +408,6 @@ class canvas():
 
         # For each student, get the student submission history.
         for studentSubmit in submissions:
-            # self.prettyPrint(studentSubmit)
             allHistory = []
             if len(studentSubmit['submissions']) > 0:
                 allHistory = studentSubmit['submissions'][0]['submission_history']
@@ -407,7 +419,9 @@ class canvas():
                 if not hist['attempt']:
                     continue
                 if attempt <= 0:
-                    if self.isSubmissionNewestNonLate(hist, allHistory):
+                    if allowLate and self.isSubmissionNewest(hist, allHistory):
+                        toGrade = hist
+                    elif self.isSubmissionNewestNonLate(hist, allHistory):
                         toGrade = hist
                 else:
                     if attempt == hist['attempt']:
@@ -416,7 +430,15 @@ class canvas():
             # Add the submission for this student that we want to
             # grade to the list.
             if toGrade:
+                if toGrade['late']:
+                    print("WARNING: Accepting LATE submission from student {}".format(studentSubmit["user_id"]))
+                if not self.isSubmissionNewest(toGrade, allHistory):
+                    print("WARNING: Student {} had a late submission more recent than the one picked"
+                            .format(studentSubmit["user_id"]))
                 goodSubmissions.append(toGrade)
+            else:
+               print("WARNING: Student {} only had late submissions or did not submit at all"
+                       .format(studentSubmit["user_id"]))
 
         if len(goodSubmissions) == 0:
             print("WARNING: Unable to find any matching submissions.")
@@ -692,10 +714,12 @@ class canvas():
                 json.dump(metadata, f, indent=4)
 
     def sendMail(self, recipients, subject, body):
+        groupConversation = len(recipients) > 1
         params = {
             "recipients[]": recipients,
             "subject": subject,
             "body": body,
+            "group_conversation": groupConversation,
         }
         resp = self.makePost("conversations", params)
 
@@ -716,7 +740,7 @@ class canvas():
             print("Warning: You are setting the default courseId to None.")
         self.courseId = courseId;
 
-    def downloadAssignment(self, courseName, assignmentName, subdirName, userid=None, attempt=-1):
+    def downloadAssignment(self, courseName, assignmentName, subdirName, userid=None, attempt=-1, allowLate=False):
         """Download the latest submissions for the course and return the list of IDs that
            we downloaded submissions for
         """
@@ -771,7 +795,7 @@ class canvas():
         submissions = self.getSubmissions(courseId=courseId, assignmentId=assignmentId, studentId=studentId)
 
         # Filter out the submissions that we want to grade (newest, non-late submission)
-        submissionsToGrade = self.findSubmissionsToGrade(submissions, attempt)
+        submissionsToGrade = self.findSubmissionsToGrade(submissions, attempt, allowLate)
 
         # Download the submissions
         students_downloaded = self.downloadSubmissions(submissionsToGrade, students, subdirName, group_memberships)

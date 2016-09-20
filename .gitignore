@@ -5,4 +5,5 @@ submissions/
 *.exe
 *.obj
 reference/test/
+error.log
 

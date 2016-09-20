@@ -163,7 +163,7 @@ def build_final_score(student_files, problems, editor):
 # Compile all the *_grade.txt files for a student into a single one and
 # compute the overall score. Then submit the grade for the assignment
 # and post the compile grade files as a comment on it
-def upload_grade(canvas):
+def upload_grade(canvas, final=True):
     try:
         fg = open('final_score.diff', 'r', encoding='utf8', errors='replace')
     except:
@@ -171,7 +171,6 @@ def upload_grade(canvas):
         with open('final_score.diff', 'w') as fg:
             fg.write("No files were found for your assignment. Are they the right files and named properly?\n")
 
-    logging.basicConfig(filename="D:/Classes/Programming for Engineers/autograder/error.log", level=logging.DEBUG)
     log = logging.getLogger("ex")
     try:
         with open('AUTOGRADE.json', 'r') as f, \
@@ -185,7 +184,7 @@ def upload_grade(canvas):
                     grade_total = float(grade_match.group(1))
                 student = json.load(f)
                 canvas.gradeAndCommentSubmissionFile(None, student['canvasSubmission']['assignment_id'],
-                        student['canvasStudent']['id'], grade_total, 'final_score.diff')
+                        student['canvasStudent']['id'], grade_total, 'final_score.diff', final)
     except Exception as err:
         log.exception(err)
         print('Cannot upload score for student without AUTOGRADE.json')
@@ -257,4 +256,12 @@ def run_student(exe, stdin_file, stdout_file, cl_stdout_file):
                 print('Exception!')
                 with open(cl_stdout_file, "a") as f:
                     f.write("\nProcess Status: Other Exception\n")
+    # Check the output size of the file
+    statinfo = os.stat(stdout_file)
+    if statinfo.st_size > 8 * 1024:
+        with open(stdout_file, 'w') as f:
+            f.write("CRITICAL OUTPUT ERROR:\n")
+            f.write("YOUR PROCESS PRODUCED BEYOND 32KB OF OUTPUT AND OUTPUT WAS IGNORED\n")
+            f.write("DO NOT PRINT DEBUG LOGGING IN THE AUTOGRADER\n")
+            f.write("YOU MAY BE PRINTING OUT OF BOUNDS OF MEMORY OR BE MISSING A NULL TERMINATOR\n")
 

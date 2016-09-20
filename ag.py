@@ -327,15 +327,22 @@ elif sys.argv[1] == 'download':
         students = c.downloadAssignment(courseName=courseName,
 				assignmentName=assignmentName, subdirName=subdirName)
         print("Downloaded {}".format(students))
+    elif len(sys.argv) == 3:
+        # Delete the any existing submission with the given name
+        if os.path.exists(os.path.join(subdirName, sys.argv[2])):
+            shutil.rmtree(os.path.join(subdirName, sys.argv[2]))
+        c.downloadAssignment(courseName=courseName, assignmentName=assignmentName,
+                subdirName=subdirName, userid=int(sys.argv[2]), allowLate=True)
     elif len(sys.argv) == 4:
         # Delete the any existing submission with the given name
         if os.path.exists(os.path.join(subdirName, sys.argv[2])):
             shutil.rmtree(os.path.join(subdirName, sys.argv[2]))
         c.downloadAssignment(courseName=courseName, assignmentName=assignmentName,
-				subdirName=subdirName, userid=sys.argv[2], attempt=int(sys.argv[3]))
+				subdirName=subdirName, userid=int(sys.argv[2]), attempt=int(sys.argv[3]))
     else:
         print("Usage:")
         print(" ag.py download   --> downloads all non-late submissions")
+        print(" ag.py download canvas_id --> downloads submission for studet <canvas_id> even if it's late ")
         print(" ag.py download username attempt# --> downloads one specific submission (even if it is late)")
         exit(1)
     removeELFs()
