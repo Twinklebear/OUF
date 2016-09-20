@@ -88,8 +88,13 @@ for dir in next(os.walk(homework_dir))[1]:
             # count the number of warnings and errors
             grading.count_warnings_errors(cl_stdout_file, result_file)
         # Open the student programs and outputs for final grading
-        elif (sys.argv[2] == 'grade' and not grading.check_grading(grade_file)) or sys.argv[2] == 'regrade':
+        elif sys.argv[2] == 'grade' and not grading.check_grading(grade_file):
             grading.grade(problem, stdout_file, result_file, grade_file, ref_stdout_file, editor)
+            # Check that a final grade for the assignment has been entered in the grade file
+            if not grading.check_grading(grade_file):
+                print("Error! No grade assigned for " + name)
+        elif sys.argv[2] == 'regrade':
+            grading.regrade(problem, stdout_file, result_file, grade_file, ref_stdout_file, editor)
             # Check that a final grade for the assignment has been entered in the grade file
             if not grading.check_grading(grade_file):
                 print("Error! No grade assigned for " + name)
