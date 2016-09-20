@@ -1,0 +1,26 @@
+{
+	"flip_flop": {
+		"points": 10,
+		"files": ["flip_flop.cpp"],
+		"stdin": "flip_flop_stdin.txt",
+		"stdout": "flip_flop_stdout.txt"
+	},
+	"worth_every_penny": {
+		"points": 30,
+		"files": ["worth_every_penny.cpp"],
+		"stdin": "worth_every_penny_stdin.txt",
+		"stdout": "worth_every_penny_stdout.txt"
+	},
+	"leibniz": {
+		"points": 20,
+		"files": ["leibniz.cpp"],
+		"stdin": "leibniz_stdin.txt",
+		"stdout": "leibniz_stdout.txt"
+	},
+	"root_finding": {
+		"points": 40,
+		"files": ["root_finding.cpp"],
+		"stdin": "root_finding_stdin.txt",
+		"stdout": "root_finding_stdout.txt"
+	}
+}

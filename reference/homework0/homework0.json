@@ -1,0 +1,6 @@
+{
+	"misconduct": {
+		"points": 1,
+		"files": ["misconduct.cpp"]
+	}
+}
