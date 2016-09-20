@@ -211,7 +211,7 @@ def compute_total_score(student_files, problems):
 def compile(cl_stdout_file, problem, name):
     with open(cl_stdout_file, 'w') as cl_stdout:
         try:
-            subprocess.Popen(['cl.exe', '/W4', '/EHsc', '/Fe' + name] + problem["files"],
+            subprocess.Popen(['cl.exe', '/W4', '/EHsc', '/O2', '/GL', '/Fe' + name] + problem["files"],
                     stdout=cl_stdout, universal_newlines=True).wait()
         except:
             print("Fatal Error! cl.exe is not available, did you setup your environment?")
