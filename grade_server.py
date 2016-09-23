@@ -49,6 +49,15 @@ def grade_new_submissions():
     students = c.downloadAssignment(courseName=course_name, assignmentName=assignment_name,
             subdirName=homework_path, allowLate=True)
     print("Downloaded new submissions from {}".format(students))
+    # Check if there's any students we failed to grade and comment on
+    # and also grab their stuff to grade.
+    for dir in next(os.walk(os.path.abspath(homework_path)))[1]:
+        student_dir = os.path.abspath(homework_path + "/" + dir)
+        if not os.path.isfile(student_dir + "/final_score.diff"):
+            print("Student {} is missing their final score, will force regrade".format(dir))
+            student_id = int(dir)
+            if student_id not in students:
+                students.append(int(dir))
 
     for student_id in students:
         student_dir = os.path.abspath(homework_path + "/" + str(student_id))
@@ -88,7 +97,7 @@ def grade_new_submissions():
         graded_files = [f for f in next(os.walk(student_dir))[2]]
         grading.build_final_score(graded_files, reference_soln, None)
         # Upload their grade
-        grading.upload_grade(c, False)
+        #grading.upload_grade(c, False)
         # CD back up out of the student's directory
         os.chdir("..")
         if student_id not in student_submission_count:
