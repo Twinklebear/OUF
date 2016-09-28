@@ -3,20 +3,10 @@ Case 0:
 Case 1:
 -9852
 Case 2:
-Parsing failed
-Case 3:
 92
-Case 4:
+Case 3:
 10
+Case 4:
+Parsing failed
 Case 5:
 Parsing failed
-Case 6:
--783
-Case 7:
-Parsing failed
-Case 8:
-0
-Case 9:
-2147483647
-Case 10:
--2147483648

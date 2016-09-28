@@ -1,6 +1,6 @@
 {
     "Matrix Multiplication": {
-		"points": 30,
+		"points": 40,
 		"files": ["matrix_mult.cpp"],
 		"stdin": "matrix_mult_stdin.txt",
 		"stdout": "matrix_mult_stdout.txt"
@@ -17,11 +17,11 @@
 		"stdin": "str_interleave_stdin.txt",
 		"stdout": "str_interleave_stdout.txt"
 	},
-	"Word Swap": {
-		"points": 20,
-		"files": ["word_swap.cpp"],
-		"stdin": "word_swap_stdin.txt",
-		"stdout": "word_swap_stdout.txt"
+	"Encryption": {
+		"points": 10,
+		"files": ["encryption.cpp"],
+		"stdin": "encryption_stdin.txt",
+		"stdout": "encryption_stdout.txt"
 	}
 }
 
