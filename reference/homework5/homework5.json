@@ -5,29 +5,11 @@
 		"stdin": "label_generator_stdin.txt",
 		"stdout": "label_generator_stdout.txt"
 	},
-	"rectangle": {
-		"points": 10,
-		"files": ["rectangle.cpp"],
-		"stdin": "rectangle_stdin.txt",
-		"stdout": "rectangle_stdout.txt"
-	},
-	"riemann_sum": {
-		"points": 30,
-		"files": ["riemann_sum.cpp"],
-		"stdin": "riemann_sum_stdin.txt",
-		"stdout": "riemann_sum_stdout.txt"
-	},
-	"rational": {
-		"points": 20,
-		"files": ["rational.cpp"],
-		"stdin": "rational_stdin.txt",
-		"stdout": "rational_stdout.txt"
-	},
-	"grading_system": {
-		"points": 30,
-		"files": ["grading_system.cpp"],
-		"stdin": "grading_system_stdin.txt",
-		"stdout": "grading_system_stdout.txt"
+	"linked_list": {
+		"points": undecided,
+		"files": ["linked_list.cpp"],
+		"stdin": "linked_list_stdin.txt",
+		"stdout": "linked_list_stdout.txt"
 	}
 }
 
