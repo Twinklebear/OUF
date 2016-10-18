@@ -1,15 +1,21 @@
 {
 	"label_generator": {
-		"points": 10,
+		"points": 20,
 		"files": ["label_generator.cpp"],
 		"stdin": "label_generator_stdin.txt",
 		"stdout": "label_generator_stdout.txt"
 	},
 	"linked_list": {
-		"points": undecided,
+		"points": 40,
 		"files": ["linked_list.cpp"],
 		"stdin": "linked_list_stdin.txt",
 		"stdout": "linked_list_stdout.txt"
+	},
+	"matrix_vector": {
+		"points": 40,
+		"files": ["matrix_vector.cpp"],
+		"stdin": "simple_matrix_vector_stdin.txt",
+		"stdout": "simple_matrix_vector_stdout.txt"
 	}
 }
 

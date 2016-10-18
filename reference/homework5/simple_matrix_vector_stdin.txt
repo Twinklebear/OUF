@@ -1,0 +1,23 @@
+8
+add
+V 1 2 3
+V 2 3 4
+length
+V 0 3 4
+dot
+V 1 1 2
+V 2 2 1
+transpose
+M 1 2 3 4 5 6 7 8 9
+multiply
+M 1 2 3 4 5 6 7 8 9
+V 1 1 1
+multiply
+M 1 2 3 4 5 6 7 8 9
+M 9 8 7 6 5 4 3 2 1
+row
+M 9 1 2 8 7 3 4 6 5
+1
+col
+M 9 1 2 8 7 3 4 6 5
+2
