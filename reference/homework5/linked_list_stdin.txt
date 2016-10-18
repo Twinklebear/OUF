@@ -40,4 +40,6 @@ remove 3
 remove 1
 remove 0
 remove 2
+remove 0
+remove 0
 end
