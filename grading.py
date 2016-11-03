@@ -115,13 +115,16 @@ def grade(problem, stdout_file, result_file, grade_file, ref_stdout_file, editor
 
 # Open files for final grading
 def regrade(problem, stdout_file, result_file, grade_file, ref_stdout_file, editor):
-    if editor:
-        editor_action = [editor] + problem["files"]
-        editor_action.append(stdout_file)
-        if os.path.isfile(ref_stdout_file):
-            editor_action.append(ref_stdout_file)
-        editor_action.append(grade_file)
-        subprocess.call(editor_action)
+    if os.path.isfile(grade_file):
+        if editor:
+            editor_action = [editor] + problem["files"]
+            editor_action.append(stdout_file)
+            if os.path.isfile(ref_stdout_file):
+                editor_action.append(ref_stdout_file)
+            editor_action.append(grade_file)
+            subprocess.call(editor_action)
+    else:
+        grade(problem, stdout_file, result_file, grade_file, ref_stdout_file, editor)
 
 # Check that a score was correctly assigned to the problem
 def check_grading(grade_file):

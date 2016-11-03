@@ -1,0 +1,62 @@
+8
+end
+prepend 2
+prepend 5
+test
+prepend 10
+test
+end
+append 1
+append 2
+test
+append 4
+end
+prepend 4
+test
+append 5
+end
+prepend 4
+test
+append 5
+end
+test
+insert 0 10
+insert 20 4
+test
+end
+test
+prepend 10
+append 4
+test
+insert 1 15
+end
+prepend 12
+test
+append 9
+insert 1 21
+remove 0
+prepend 2
+test
+prepend 5
+prepend 10
+remove 0
+append 1
+test
+remove 40
+append 2
+test
+remove 3
+append 4
+test
+remove 0
+insert 0 15
+remove 3
+test
+remove 1
+remove 0
+remove 2
+test
+remove 0
+remove 0
+test
+end

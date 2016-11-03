@@ -1,8 +1,20 @@
 {
-	"nd_vector": {
-		"points": 100,
-		"files": ["nd_vector.cpp"],
-		"stdin": "nd_vector_stdin.txt",
-		"stdout": "nd_vector_stdout.txt"
+	"linked_list": {
+		"points": 40,
+		"files": ["linked_list.cpp"],
+		"stdin": "linked_list_stdin.txt",
+		"stdout": "linked_list_stdout.txt"
+	},
+    "rational": {
+		"points": 30,
+		"files": ["rational.cpp"],
+		"stdin": "rational_stdin.txt",
+		"stdout": "rational_stdout.txt"
+	},
+    "month": {
+		"points": 30,
+		"files": ["month.cpp"],
+		"stdin": "month_stdin.txt",
+		"stdout": "month_stdout.txt"
 	}
 }

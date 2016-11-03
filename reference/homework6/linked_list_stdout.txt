@@ -1,0 +1,341 @@
+Case 0:
+empty
+Case 1:
+2
+5, 2
+---- Test Function ----
+current = 5, 2
+b = 5, 2
+current = 5, 2
+b = 60, 15, 5, 2, 2
+current = 5, 2
+b = 60, 5, 2, 2
+current = 5, 2
+b = 60, 5, 2, 2
+c = 2, 5
+current = 5, 2
+b = 60, 5, 2, 2, 100
+c = 60, 4, 5, 2, 2
+current = 5, 2
+c = 60, 4, 5, 2, 2
+---- End Test Function ----
+5, 2
+10, 5, 2
+---- Test Function ----
+current = 10, 5, 2
+b = 10, 5, 2
+current = 10, 5, 2
+b = 60, 15, 10, 5, 2, 2
+current = 10, 5, 2
+b = 60, 10, 5, 2, 2
+current = 10, 5, 2
+b = 60, 10, 5, 2, 2
+c = 2, 5
+current = 10, 5, 2
+b = 60, 10, 5, 2, 2, 100
+c = 60, 4, 10, 5, 2, 2
+current = 10, 5, 2
+c = 60, 4, 10, 5, 2, 2
+---- End Test Function ----
+10, 5, 2
+10, 5, 2
+Case 2:
+1
+1, 2
+---- Test Function ----
+current = 1, 2
+b = 1, 2
+current = 1, 2
+b = 60, 15, 1, 2, 2
+current = 1, 2
+b = 60, 1, 2, 2
+current = 1, 2
+b = 60, 1, 2, 2
+c = 2, 5
+current = 1, 2
+b = 60, 1, 2, 2, 100
+c = 60, 4, 1, 2, 2
+current = 1, 2
+c = 60, 4, 1, 2, 2
+---- End Test Function ----
+1, 2
+1, 2, 4
+1, 2, 4
+Case 3:
+4
+---- Test Function ----
+current = 4
+b = 4
+current = 4
+b = 60, 15, 4, 2
+current = 4
+b = 60, 4, 2
+current = 4
+b = 60, 4, 2
+c = 2, 5
+current = 4
+b = 60, 4, 2, 100
+c = 60, 4, 4, 2
+current = 4
+c = 60, 4, 4, 2
+---- End Test Function ----
+4
+4, 5
+4, 5
+Case 4:
+4
+---- Test Function ----
+current = 4
+b = 4
+current = 4
+b = 60, 15, 4, 2
+current = 4
+b = 60, 4, 2
+current = 4
+b = 60, 4, 2
+c = 2, 5
+current = 4
+b = 60, 4, 2, 100
+c = 60, 4, 4, 2
+current = 4
+c = 60, 4, 4, 2
+---- End Test Function ----
+4
+4, 5
+4, 5
+Case 5:
+---- Test Function ----
+current = empty
+b = empty
+current = empty
+b = 60, 15, 2
+current = empty
+b = 60, 2
+current = empty
+b = 60, 2
+c = 2, 5
+current = empty
+b = 60, 2, 100
+c = 60, 4, 2
+current = empty
+c = 60, 4, 2
+---- End Test Function ----
+empty
+10
+10, 4
+---- Test Function ----
+current = 10, 4
+b = 10, 4
+current = 10, 4
+b = 60, 15, 10, 4, 2
+current = 10, 4
+b = 60, 10, 4, 2
+current = 10, 4
+b = 60, 10, 4, 2
+c = 2, 5
+current = 10, 4
+b = 60, 10, 4, 2, 100
+c = 60, 4, 10, 4, 2
+current = 10, 4
+c = 60, 4, 10, 4, 2
+---- End Test Function ----
+10, 4
+10, 4
+Case 6:
+---- Test Function ----
+current = empty
+b = empty
+current = empty
+b = 60, 15, 2
+current = empty
+b = 60, 2
+current = empty
+b = 60, 2
+c = 2, 5
+current = empty
+b = 60, 2, 100
+c = 60, 4, 2
+current = empty
+c = 60, 4, 2
+---- End Test Function ----
+empty
+10
+10, 4
+---- Test Function ----
+current = 10, 4
+b = 10, 4
+current = 10, 4
+b = 60, 15, 10, 4, 2
+current = 10, 4
+b = 60, 10, 4, 2
+current = 10, 4
+b = 60, 10, 4, 2
+c = 2, 5
+current = 10, 4
+b = 60, 10, 4, 2, 100
+c = 60, 4, 10, 4, 2
+current = 10, 4
+c = 60, 4, 10, 4, 2
+---- End Test Function ----
+10, 4
+10, 15, 4
+10, 15, 4
+Case 7:
+12
+---- Test Function ----
+current = 12
+b = 12
+current = 12
+b = 60, 15, 12, 2
+current = 12
+b = 60, 12, 2
+current = 12
+b = 60, 12, 2
+c = 2, 5
+current = 12
+b = 60, 12, 2, 100
+c = 60, 4, 12, 2
+current = 12
+c = 60, 4, 12, 2
+---- End Test Function ----
+12
+12, 9
+12, 21, 9
+21, 9
+2, 21, 9
+---- Test Function ----
+current = 2, 21, 9
+b = 2, 21, 9
+current = 2, 21, 9
+b = 60, 15, 2, 21, 9, 2
+current = 2, 21, 9
+b = 60, 2, 21, 9, 2
+current = 2, 21, 9
+b = 60, 2, 21, 9, 2
+c = 2, 5
+current = 2, 21, 9
+b = 60, 2, 21, 9, 2, 100
+c = 60, 4, 2, 21, 9, 2
+current = 2, 21, 9
+c = 60, 4, 2, 21, 9, 2
+---- End Test Function ----
+2, 21, 9
+5, 2, 21, 9
+10, 5, 2, 21, 9
+5, 2, 21, 9
+5, 2, 21, 9, 1
+---- Test Function ----
+current = 5, 2, 21, 9, 1
+b = 5, 2, 21, 9, 1
+current = 5, 2, 21, 9, 1
+b = 60, 15, 5, 2, 21, 9, 1, 2
+current = 5, 2, 21, 9, 1
+b = 60, 5, 2, 21, 9, 1, 2
+current = 5, 2, 21, 9, 1
+b = 60, 5, 2, 21, 9, 1, 2
+c = 2, 5
+current = 5, 2, 21, 9, 1
+b = 60, 5, 2, 21, 9, 1, 2, 100
+c = 60, 4, 5, 2, 21, 9, 1, 2
+current = 5, 2, 21, 9, 1
+c = 60, 4, 5, 2, 21, 9, 1, 2
+---- End Test Function ----
+5, 2, 21, 9, 1
+5, 2, 21, 9, 1
+5, 2, 21, 9, 1, 2
+---- Test Function ----
+current = 5, 2, 21, 9, 1, 2
+b = 5, 2, 21, 9, 1, 2
+current = 5, 2, 21, 9, 1, 2
+b = 60, 15, 5, 2, 21, 9, 1, 2, 2
+current = 5, 2, 21, 9, 1, 2
+b = 60, 5, 2, 21, 9, 1, 2, 2
+current = 5, 2, 21, 9, 1, 2
+b = 60, 5, 2, 21, 9, 1, 2, 2
+c = 2, 5
+current = 5, 2, 21, 9, 1, 2
+b = 60, 5, 2, 21, 9, 1, 2, 2, 100
+c = 60, 4, 5, 2, 21, 9, 1, 2, 2
+current = 5, 2, 21, 9, 1, 2
+c = 60, 4, 5, 2, 21, 9, 1, 2, 2
+---- End Test Function ----
+5, 2, 21, 9, 1, 2
+5, 2, 21, 1, 2
+5, 2, 21, 1, 2, 4
+---- Test Function ----
+current = 5, 2, 21, 1, 2, 4
+b = 5, 2, 21, 1, 2, 4
+current = 5, 2, 21, 1, 2, 4
+b = 60, 15, 5, 2, 21, 1, 2, 4, 2
+current = 5, 2, 21, 1, 2, 4
+b = 60, 5, 2, 21, 1, 2, 4, 2
+current = 5, 2, 21, 1, 2, 4
+b = 60, 5, 2, 21, 1, 2, 4, 2
+c = 2, 5
+current = 5, 2, 21, 1, 2, 4
+b = 60, 5, 2, 21, 1, 2, 4, 2, 100
+c = 60, 4, 5, 2, 21, 1, 2, 4, 2
+current = 5, 2, 21, 1, 2, 4
+c = 60, 4, 5, 2, 21, 1, 2, 4, 2
+---- End Test Function ----
+5, 2, 21, 1, 2, 4
+2, 21, 1, 2, 4
+15, 2, 21, 1, 2, 4
+15, 2, 21, 2, 4
+---- Test Function ----
+current = 15, 2, 21, 2, 4
+b = 15, 2, 21, 2, 4
+current = 15, 2, 21, 2, 4
+b = 60, 15, 15, 2, 21, 2, 4, 2
+current = 15, 2, 21, 2, 4
+b = 60, 15, 2, 21, 2, 4, 2
+current = 15, 2, 21, 2, 4
+b = 60, 15, 2, 21, 2, 4, 2
+c = 2, 5
+current = 15, 2, 21, 2, 4
+b = 60, 15, 2, 21, 2, 4, 2, 100
+c = 60, 4, 15, 2, 21, 2, 4, 2
+current = 15, 2, 21, 2, 4
+c = 60, 4, 15, 2, 21, 2, 4, 2
+---- End Test Function ----
+15, 2, 21, 2, 4
+15, 21, 2, 4
+21, 2, 4
+21, 2
+---- Test Function ----
+current = 21, 2
+b = 21, 2
+current = 21, 2
+b = 60, 15, 21, 2, 2
+current = 21, 2
+b = 60, 21, 2, 2
+current = 21, 2
+b = 60, 21, 2, 2
+c = 2, 5
+current = 21, 2
+b = 60, 21, 2, 2, 100
+c = 60, 4, 21, 2, 2
+current = 21, 2
+c = 60, 4, 21, 2, 2
+---- End Test Function ----
+21, 2
+2
+empty
+---- Test Function ----
+current = empty
+b = empty
+current = empty
+b = 60, 15, 2
+current = empty
+b = 60, 2
+current = empty
+b = 60, 2
+c = 2, 5
+current = empty
+b = 60, 2, 100
+c = 60, 4, 2
+current = empty
+c = 60, 4, 2
+---- End Test Function ----
+empty
+empty
