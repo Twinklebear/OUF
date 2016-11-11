@@ -44,11 +44,18 @@ if sys.argv[2] == 'upload':
 
 logging.basicConfig(filename="error.log", level=logging.DEBUG)
 grade_stats = []
+# Count the number of student dirs so we can report progress in grading
+num_students = 0
+for dir in next(os.walk(homework_dir))[1]:
+    num_students += 1
+
 # Collect the list of all student directories
 print(homework_dir)
+current_student = 1
 for dir in next(os.walk(homework_dir))[1]:
     student_dir = os.path.abspath(homework_dir + '/' + dir)
-    print('Processing student ' + student_dir)
+    print('Processing student id {} progress {}/{}'.format(student_dir, current_student, num_students))
+    current_student += 1
     os.chdir(student_dir)
     files = [f for f in next(os.walk(student_dir))[2]]
     # Collect the list of all of the student's files if we're uploading their
