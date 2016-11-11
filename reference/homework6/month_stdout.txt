@@ -1,5 +1,10 @@
+Case 0:
 Jun Wed, Jul Fri, Aug Mon, Sep Thu
+Case 1:
 Jan Thu, Feb Sun, Mar Sun, Apr Wed, May Fri, Jun Mon, Jul Wed, Aug Sat, Sep Tue, Oct Thu
+Case 2:
 Feb Sat, Mar Sat, Apr Tue, May Thu, Jun Sun, Jul Tue
+Case 3:
 Dec Thu, Jan Sun, Feb Wed
+Case 4:
 Jan Mon, Feb Thu, Mar Thu, Apr Sun, May Tue, Jun Fri, Jul Sun, Aug Wed, Sep Sat, Oct Mon, Nov Thu, Dec Sat, Jan Tue
