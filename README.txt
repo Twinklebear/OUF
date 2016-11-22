@@ -4,6 +4,7 @@ Visual Studio 2015
 Vim or Notepad++
 
 I. Setup
+--------
 
 0. Put a .canvas-token file in C:/Users/<username>. The contents of this file
 can be obtained from the Canvas website. It should look likes the following
@@ -12,6 +13,7 @@ self.CANVAS_API="https://utah.instructure.com/api/v1/"
 self.CANVAS_TOKEN="2~FQzLuKLzmLJvy77LFafaaUcUxPw0PdfwpLvP6c3qLK2mgvkHMBaPZPF3uS3Rrmje"
 
 II. How to download homework submissions and grade them
+-------------------------------------------------------
 
 0. Create a directory named <homework> in ./reference, where <homework> is the
 name of the current assignment, for example "homework3".
@@ -68,3 +70,14 @@ for example "homework3".
 
 4. Upload the scores
 ./python test_cl.py <homework> upload
+
+III. How to run the grading server
+----------------------------------
+
+0. Create a ./<homework> directory where <homework> is the name of the current
+assignment. Put a autograde-config.json file in it (see above for the contents
+of this file).
+
+1. Run the following two commands
+./<homework>/../set_cl_env.bat
+./<homework>/python ../grade_server.py
