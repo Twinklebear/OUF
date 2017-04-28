@@ -1,7 +1,7 @@
-OUF - Optional Useless Feedback
+QuickCheck
 ==========
 
-This collection of scripts implements an feedback system for MSVC that can be used to
+This collection of scripts implements a feedback and checking system for MSVC that can be used to
 grade programming assignments written in C++. It also includes scripts to interact with Canvas.
 
 Getting started
